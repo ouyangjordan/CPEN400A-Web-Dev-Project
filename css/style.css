@@ -1,5 +1,6 @@
 body {
     max-width: 1000px;
+    background-image: url("../images/background-1.jpeg");
 }
 
 ul {
@@ -15,6 +16,16 @@ ul {
 
 .column {
     padding: 10px;
+}
+
+#banner {
+    height: 300px;
+    width: 680px;
+}
+
+#logo {
+    height: 300px;
+    width: 300px;
 }
 
 #menu{
@@ -45,6 +56,10 @@ ul {
     padding-top: 5px;
 }
 
+.product:hover {
+
+}
+
 #productList {
     width:80%;
     -webkit-column-count: 3;
@@ -52,11 +67,8 @@ ul {
     column-count: 3;
     text-align:center;
     float: left;
-    line-height: 35px;
+    line-height: 28px;
     font-size: large;
-}
-
-li.product {
 }
 
 .items {
@@ -65,23 +77,14 @@ li.product {
     padding: 2px;
 }
 
-#banner {
-    height: 300px;
-    width: 680px;
-}
-
-#logo {
-    height: 300px;
-    width: 300px;
-}
-
 #content {
     display: flex;
-    float: left;
-    background-color: dodgerblue;
     height: 800px;
 }
 
-#header {
-    background-color: darkred;
+#footer {
+    background-color: chocolate;
+    padding: 10px;
+    text-align: center;
+    border: 3px solid black;
 }
