@@ -2,6 +2,13 @@ body {
     max-width: 1000px;
 }
 
+ul {
+    display: inline-block;
+    list-style-type: none;
+    vertical-align: top;
+    padding: 10px;
+}
+
 .row {
     display: flex;
 }
@@ -11,14 +18,18 @@ body {
 }
 
 #menu{
-    width:300px;
+    width:30%;
+    float: left;
 }
 
 .menuItem {
+    text-align: center;
     background-color: chocolate;
-    padding: 2px;
-    max-width: 200px;
-    margin: 2px;
+    max-width: 400px;
+    margin-bottom: 2px;
+    height: 50px;
+    font-size: 20px;
+    line-height: 50px;
 }
 
 .menuItem:hover {
@@ -26,23 +37,34 @@ body {
     font-family: YuGothic;
 }
 
+.product {
+    background-color: chocolate;
+    height: 32%;
+    width: 100%;
+    margin-bottom: 5px;
+    padding-top: 5px;
+}
+
 #productList {
-    width:610px;
+    width:80%;
     -webkit-column-count: 3;
     -moz-column-count: 3;
     column-count: 3;
     text-align:center;
+    float: left;
+    line-height: 35px;
+    font-size: large;
 }
 
-.product {
-    
+li.product {
 }
 
-#box1 {
-    background-image:url('../images/Box1_$10.png');
-    height:100%;
-    width:100%;
+.items {
+    width: 95%;
+    height: 80%;
+    padding: 2px;
 }
+
 #banner {
     height: 300px;
     width: 680px;
@@ -54,10 +76,12 @@ body {
 }
 
 #content {
-    /*
-    text-align: center;*/
+    display: flex;
+    float: left;
+    background-color: dodgerblue;
+    height: 800px;
 }
 
-ul {
-    display: inline-block;
+#header {
+    background-color: darkred;
 }
