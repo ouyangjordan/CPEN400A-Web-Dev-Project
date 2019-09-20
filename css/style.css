@@ -10,6 +10,10 @@ body {
     padding: 10px;
 }
 
+#menu{
+    width:300px;
+}
+
 .menuItem {
     background-color: chocolate;
     padding: 2px;
@@ -22,6 +26,23 @@ body {
     font-family: YuGothic;
 }
 
+#productList {
+    width:610px;
+    -webkit-column-count: 3;
+    -moz-column-count: 3;
+    column-count: 3;
+    text-align:center;
+}
+
+.product {
+    
+}
+
+#box1 {
+    background-image:url('../images/Box1_$10.png');
+    height:100%;
+    width:100%;
+}
 #banner {
     height: 300px;
     width: 680px;
@@ -33,7 +54,8 @@ body {
 }
 
 #content {
-    text-align: center;
+    /*
+    text-align: center;*/
 }
 
 ul {
