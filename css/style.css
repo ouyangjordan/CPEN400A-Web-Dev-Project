@@ -1,3 +1,7 @@
+body {
+    max-width: 1000px;
+}
+
 .row {
     display: flex;
 }
@@ -8,13 +12,14 @@
 
 .menuItem {
     background-color: chocolate;
-    padding: 1px;
-    max-width: 100px;
+    padding: 2px;
+    max-width: 200px;
     margin: 2px;
 }
 
-.product {
-    list-style-image: url("../images/dummy-book.png");
+.menuItem:hover {
+    background-color: darkgreen;
+    font-family: YuGothic;
 }
 
 #banner {
@@ -25,11 +30,6 @@
 #logo {
     height: 300px;
     width: 300px;
-}
-
-#tech:hover {
-    background-color: darkgreen;
-    font-family: YuGothic;
 }
 
 #content {
