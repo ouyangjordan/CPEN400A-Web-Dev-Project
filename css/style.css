@@ -1,0 +1,41 @@
+.row {
+    display: flex;
+}
+
+.column {
+    padding: 10px;
+}
+
+.menuItem {
+    background-color: chocolate;
+    padding: 1px;
+    max-width: 100px;
+    margin: 2px;
+}
+
+.product {
+    list-style-image: url("../images/dummy-book.png");
+}
+
+#banner {
+    height: 300px;
+    width: 680px;
+}
+
+#logo {
+    height: 300px;
+    width: 300px;
+}
+
+#tech:hover {
+    background-color: darkgreen;
+    font-family: YuGothic;
+}
+
+#content {
+    text-align: center;
+}
+
+ul {
+    display: inline-block;
+}
