@@ -46,6 +46,7 @@ ul {
 .menuItem:hover {
     background-color: blue;
     font-family: YuGothic;
+    color: yellow;
 }
 
 .product {
