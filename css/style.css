@@ -37,14 +37,14 @@ ul {
     text-align: center;
     background-color: chocolate;
     max-width: 400px;
-    margin-bottom: 2px;
+    margin-bottom: 5px;
     height: 50px;
     font-size: 20px;
     line-height: 50px;
 }
 
 .menuItem:hover {
-    background-color: darkgreen;
+    background-color: blue;
     font-family: YuGothic;
 }
 
@@ -56,8 +56,18 @@ ul {
     padding-top: 5px;
 }
 
-.product:hover {
+.price {
+    display: none;
+    background-color: yellow;
+    color: darkred;
 
+
+}
+
+.product:hover .price {
+    display: block;
+    color: darkred;
+    font-size: 25px;
 }
 
 #productList {
