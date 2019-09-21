@@ -56,27 +56,13 @@ ul {
     padding-top: 5px;
 }
 
-.price {
-    display: none;
-    background-color: yellow;
-    color: darkred;
-
-
-}
-
-.product:hover .price {
-    display: block;
-    color: darkred;
-    font-size: 25px;
-}
-
 #productList {
     width:80%;
     -webkit-column-count: 3;
     -moz-column-count: 3;
     column-count: 3;
     text-align:center;
-    float: left;
+    float: right;
     line-height: 28px;
     font-size: large;
 }
@@ -89,7 +75,7 @@ ul {
 
 #content {
     display: flex;
-    height: 800px;
+    height: 870px;
 }
 
 #footer {
@@ -97,4 +83,26 @@ ul {
     padding: 10px;
     text-align: center;
     border: 3px solid black;
+}
+
+.image {
+    position:relative;
+}
+
+.overlay {
+    display: none;
+    color: darkred;
+}
+
+.image:hover .overlay {
+    width: 210px;
+    background: yellow;
+    position: absolute;
+    top: 0%;
+    left: 2%;
+    display: inline-block;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    font-size: larger;
 }
