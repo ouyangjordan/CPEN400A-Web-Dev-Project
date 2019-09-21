@@ -56,6 +56,10 @@ ul {
     padding-top: 5px;
 }
 
+.product:hover {
+    background-color: blue;
+}
+
 #productList {
     width:80%;
     -webkit-column-count: 3;
