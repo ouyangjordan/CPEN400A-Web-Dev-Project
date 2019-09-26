@@ -44,21 +44,14 @@ ul {
 }
 
 .menuItem:hover {
-    background-color: blue;
+    background-color: darkred;
     font-family: YuGothic;
     color: yellow;
 }
 
-.product {
-    background-color: chocolate;
-    height: 32%;
-    width: 100%;
-    margin-bottom: 5px;
-    padding-top: 5px;
-}
-
 .product:hover {
-    background-color: blue;
+    background-color: black;
+    color: yellow;
 }
 
 #productList {
@@ -66,16 +59,9 @@ ul {
     -webkit-column-count: 3;
     -moz-column-count: 3;
     column-count: 3;
-    text-align:center;
     float: right;
     line-height: 28px;
     font-size: large;
-}
-
-.items {
-    width: 95%;
-    height: 80%;
-    padding: 2px;
 }
 
 #content {
@@ -90,24 +76,91 @@ ul {
     border: 3px solid black;
 }
 
-.image {
-    position:relative;
+/* parent (container) of img, buttons and price */
+.product {
+    background-color: chocolate;
+    height: 32%;
+    width: 100%;
+    margin-bottom: 5px;
+    padding-top: 5px;
+    position: relative;
+    text-align: center;
 }
 
-.overlay {
+/* images */
+.items {
+    width: 95%;
+    height: 80%;
+}
+
+.price {
     display: none;
-    color: darkred;
 }
 
-.image:hover .overlay {
-    width: 210px;
-    background: yellow;
+.product:hover .price {
+    width: 95%;
+    height: 12%;
+    background: darkred;
     position: absolute;
-    top: 0%;
+    top: 2%;
     left: 2%;
     display: inline-block;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     font-size: larger;
+    color: yellow;
+}
+
+.btn-add {
+    display: none;
+}
+
+.btn-remove {
+    display: none;
+}
+
+.product:hover .btn-add {
+    width: 95%;
+    position: absolute;
+    top: 58%;
+    left: 2%;
+    background-color: darkblue;
+    color: white;
+    font-size: 12px;
+    padding: 6px 12px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    display: inline-block;
+    color: white;
+    font-family: YuGothic;
+}
+
+.product:hover .btn-remove{
+    width: 95%;
+    position: absolute;
+    top: 70%;
+    left: 2%;
+    background-color: darkblue;
+    color: white;
+    font-size: 12px;
+    padding: 6px 12px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    display: inline-block;
+    color: white;
+}
+
+.product .btn-add:hover {
+    background-color: darkred;
+    color: yellow;
+    font-size: 14px;
+}
+
+.product .btn-remove:hover {
+    background-color: darkred;
+    color: yellow;
+    font-size: 14px;
 }
