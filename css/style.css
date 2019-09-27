@@ -50,8 +50,8 @@ ul {
 }
 
 .product:hover {
-    background-color: black;
-    color: yellow;
+    background-color: yellow;
+    color: black;
 }
 
 #productList {
@@ -87,6 +87,10 @@ ul {
     text-align: center;
 }
 
+.product:hover {
+    font-size: larger;
+}
+
 /* images */
 .items {
     width: 95%;
@@ -108,8 +112,8 @@ ul {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-    font-size: larger;
-    color: yellow;
+    font-size: 30px;
+    color: white;
 }
 
 .btn-add {
@@ -123,11 +127,11 @@ ul {
 .product:hover .btn-add {
     width: 95%;
     position: absolute;
-    top: 58%;
+    top: 56%;
     left: 2%;
     background-color: darkblue;
     color: white;
-    font-size: 12px;
+    font-size: 14px;
     padding: 6px 12px;
     border: none;
     cursor: pointer;
@@ -144,7 +148,7 @@ ul {
     left: 2%;
     background-color: darkblue;
     color: white;
-    font-size: 12px;
+    font-size: 14px;
     padding: 6px 12px;
     border: none;
     cursor: pointer;
@@ -154,13 +158,31 @@ ul {
 }
 
 .product .btn-add:hover {
-    background-color: darkred;
+    background-color: black;
     color: yellow;
-    font-size: 14px;
+    font-size: 18px;
 }
 
 .product .btn-remove:hover {
-    background-color: darkred;
+    background-color: black;
     color: yellow;
-    font-size: 14px;
+    font-size: 18px;
+}
+
+#btn-show-cart{
+    width: 100%;
+    height: 10%;
+    margin-bottom: 10px;
+    border: black;
+    cursor: pointer;
+    border-radius: 10px;
+    font-size: larger;
+    background-color: #555;
+    color: white;
+}
+
+#btn-show-cart:hover {
+    font-size: x-large;
+    background-color: blue;
+    background-color: black;
 }
