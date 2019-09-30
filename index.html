@@ -80,7 +80,7 @@
                 <button class="btn-add" onclick="store.addItemToCart('PC1')">Add to Cart</button>
                 <button class="btn-remove" onclick="store.removeItemFromCart('PC1')">Remove from Cart</button>
                 <span class="price">$350</span>
-                PC3
+                PC1
             </li>
             <li class="product">
                 <img class="items" src="images/Clothes2_$30.png"/>
@@ -88,6 +88,27 @@
                 <button class="btn-remove"  onclick="store.removeItemFromCart('Clothes2')">Remove from Cart</button>
                 <span class="price">$30</span>
                 Clothes2
+            </li>
+            <li class="product">
+                <img class="items" src="images/KeyboardCombo_$40.png"/>
+                <button class="btn-add" onclick="store.addItemToCart('KeyboardCombo')">Add to Cart</button>
+                <button class="btn-remove"  onclick="store.removeItemFromCart('KeyboardCombo')">Remove from Cart</button>
+                <span class="price">$40</span>
+                KeyboardCombo
+            </li>
+            <li class="product">
+                <img class="items" src="images/PC2_$400.png"/>
+                <button class="btn-add" onclick="store.addItemToCart('PC2')">Add to Cart</button>
+                <button class="btn-remove"  onclick="store.removeItemFromCart('PC2')">Remove from Cart</button>
+                <span class="price">$400</span>
+                PC2
+            </li>
+            <li class="product">
+                <img class="items" src="images/PC3_$300.png"/>
+                <button class="btn-add" onclick="store.addItemToCart('PC3')">Add to Cart</button>
+                <button class="btn-remove"  onclick="store.removeItemFromCart('PC3')">Remove from Cart</button>
+                <span class="price">$300</span>
+                PC3
             </li>
         </ul>
     </div>
@@ -97,4 +118,24 @@
         <p>6200 University Blvd, Vancouver, BC V6T 1Z4</p>
     </div>
 </body>
+
+<script type="text/javascript">
+let inactiveTime = 0;
+
+$(document).ready(function () {
+    //Increment the idle time counter every minute.
+    var idleInterval = setInterval(timerIncrement, 1000); // 1 second intervals
+});
+
+function timerIncrement() {
+
+    inactiveTime = inactiveTime + 1;
+
+    if (inactiveTime > 30) { // 30 seconds of inactivity
+        alert("Hey there! Are you still planning to buy something?");
+        //On ok of alert reset timer
+        inactiveTime = 0;
+    }
+}
+</script>
 </html>

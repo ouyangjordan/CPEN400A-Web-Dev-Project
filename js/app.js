@@ -53,6 +53,25 @@ let products = {
         "imageUrl" : "images/Tent_$100.png",
         "price" :  100,
         "quantity" : 5
+    },
+
+    "KeyboardCombo": {
+        "label" : "Keyboard Combo",
+        "imageUrl" : "images/KeyboardCombo_$40.png",
+        "price" :  40,
+        "quantity" : 5
+    },
+    "PC2": {
+        "label" : "Gaming PC 2",
+        "imageUrl" : "images/PC2_$400.png",
+        "price" :  400,
+        "quantity" : 5
+    },
+    "PC3": {
+        "label" : "Gaming PC 3",
+        "imageUrl" : "images/PC3_$300.png",
+        "price" :  300,
+        "quantity" : 5
     }
 };
 
@@ -61,9 +80,15 @@ let products = {
 * Store object will keep track of the items in the store and the items in the cart
 */
 const Store = function (initialStock){
+
     this.stock = initialStock;
     this.cart = {};
     this.addItemToCart = (itemName) => {
+
+        //reset inactive time when performing any action
+
+        inactiveTime = 0;
+
         if(this.stock[itemName].quantity > 0)
         {
             if(this.cart[itemName])
@@ -78,6 +103,11 @@ const Store = function (initialStock){
         }
     }
     this.removeItemFromCart = (itemName) => {
+
+        //reset inactive time when performing any action
+
+        inactiveTime = 0;
+        
         if(this.cart[itemName]){
             this.cart[itemName]--;
             if(this.cart[itemName] === 0) delete this.cart[itemName];
@@ -94,13 +124,19 @@ let store = new Store(products);
 
 /* Implement a function with the signature showCart(cart), which invokes an alert to display the contents of the given cart object */
 function showCart(cart) {
+
+    //reset inactive time when performing any action
+
+    inactiveTime = 0;
+
     let res = [];
     for (let key in cart) {
         if (cart.hasOwnProperty(key))
             res.push(`${key} : ${cart[key]}`);
     }
     if(res.length === 0)
-        alert("Your cart is currently empty!")
+        alert("Your cart is currently empty!");
     else
         alert(`Your cart currently has the following items:\n${res.join('\n')}`);
 }
+
