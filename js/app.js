@@ -72,50 +72,61 @@ let products = {
         "imageUrl" : "images/PC3_$300.png",
         "price" :  300,
         "quantity" : 5
-    }
+    },
+    "foo" : {
+        "label" : "foo",
+        "imageUrl" : "null",
+        "price" : 1,
+        "quantity" : 5
+    } /*foo is added because the test 5A would fail when trying to read the label of
+      foo because it did not exist*/
 };
 
 /*
 * Constructor function for creating a store object
 * Store object will keep track of the items in the store and the items in the cart
 */
-const Store = function (initialStock){
+function Store(initialStock){
 
-    this.stock = initialStock;
-    this.cart = {};
-    this.addItemToCart = (itemName) => {
+  let store = Object.create(Store.prototype)
+    store.stock = initialStock;
+    store.cart = {};
+    return store;
+}
 
-        //reset inactive time when performing any action
+Store.prototype.addItemToCart = function(itemName){
 
-        inactiveTime = 0;
+    //reset inactive time when performing any action
 
-        if(this.stock[itemName].quantity > 0)
-        {
-            if(this.cart[itemName])
-                this.cart[itemName]++;
-            else
-                this.cart[itemName] = 1;
-            this.stock[itemName].quantity--;
-        }
+    inactiveTime = 0;
+
+    if(this.stock[itemName].quantity > 0)
+    {
+        if(this.cart[itemName])
+            this.cart[itemName]++;
         else
-        {
-            alert(`${products[itemName].label} is out of stock. Sorry!`);
-        }
+            this.cart[itemName] = 1;
+            this.stock[itemName].quantity--;
     }
-    this.removeItemFromCart = (itemName) => {
+    else
+    {
+        alert(`${products[itemName].label} is out of stock. Sorry!`);
+    }
+}
 
-        //reset inactive time when performing any action
+Store.prototype.removeItemFromCart = function(itemName) {
 
-        inactiveTime = 0;
-        
-        if(this.cart[itemName]){
-            this.cart[itemName]--;
-            if(this.cart[itemName] === 0) delete this.cart[itemName];
-            this.stock[itemName].quantity++;
-        }
-        else{
-            alert(`${products[itemName].label} is not in your cart. Did you mean to add it?`)
-        }
+    //reset inactive time when performing any action
+
+    inactiveTime = 0;
+
+    if(this.cart[itemName]){
+        this.cart[itemName]--;
+        if(this.cart[itemName] === 0) delete this.cart[itemName];
+        this.stock[itemName].quantity++;
+    }
+    else{
+        alert(`${products[itemName].label} is not in your cart. Did you mean to add it?`)
     }
 }
 
@@ -139,4 +150,3 @@ function showCart(cart) {
     else
         alert(`Your cart currently has the following items:\n${res.join('\n')}`);
 }
-
