@@ -79,7 +79,7 @@ ul {
 /* parent (container) of img, buttons and price */
 .product {
     background-color: chocolate;
-    height: 32%;
+    height: 23%;
     width: 100%;
     margin-bottom: 5px;
     padding-top: 5px;
@@ -98,6 +98,7 @@ ul {
 }
 
 .price {
+    height:28px !important; /*May need to change later*/
     display: none;
 }
 
