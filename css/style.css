@@ -128,7 +128,7 @@ ul {
 .product:hover .btn-add {
     width: 95%;
     position: absolute;
-    top: 56%;
+    top: 50%;
     left: 2%;
     background-color: darkblue;
     color: white;
@@ -145,7 +145,7 @@ ul {
 .product:hover .btn-remove{
     width: 95%;
     position: absolute;
-    top: 70%;
+    top: 68%;
     left: 2%;
     background-color: darkblue;
     color: white;
