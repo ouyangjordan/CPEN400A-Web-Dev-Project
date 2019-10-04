@@ -158,7 +158,6 @@ let inactiveTime = 0;
 
 function timerIncrement() {
     inactiveTime = inactiveTime + 1;
-    console.log(inactiveTime);
     if (inactiveTime > 30) { // 30 seconds of inactivity
 
 
