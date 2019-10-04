@@ -119,22 +119,4 @@
         <p>6200 University Blvd, Vancouver, BC V6T 1Z4</p>
     </div>
 </body>
-
-<script type="text/javascript">
-let inactiveTime = 0;
-$(document).ready(function () {
-    //Increment the idle time counter every minute.
-    var idleInterval = setInterval(timerIncrement, 1000); // 1 second intervals
-});
-function timerIncrement() {
-    inactiveTime = inactiveTime + 1;
-    if (inactiveTime > 30) { // 30 seconds of inactivity
-
-
-        alert("Hey there! Are you still planning to buy something?");
-        //On ok of alert reset timer
-        inactiveTime = 0;
-    }
-}
-</script>
 </html>

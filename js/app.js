@@ -150,3 +150,22 @@ function showCart(cart) {
     else
         alert(`Your cart currently has the following items:\n${res.join('\n')}`);
 }
+
+/* Create global variable to keeping track of inactiveTime */
+let inactiveTime = 0;
+
+/*Function to increment timer when inactive*/
+
+function timerIncrement() {
+    inactiveTime = inactiveTime + 1;
+    console.log(inactiveTime);
+    if (inactiveTime > 30) { // 30 seconds of inactivity
+
+
+        alert("Hey there! Are you still planning to buy something?");
+        //On ok of alert reset timer
+        inactiveTime = 0;
+    }
+}
+/*Run inactive function every second*/
+setInterval(timerIncrement,1000);
