@@ -106,7 +106,8 @@ Store.prototype.addItemToCart = function(itemName){
             this.cart[itemName]++;
         else
             this.cart[itemName] = 1;
-            this.stock[itemName].quantity--;
+
+        this.stock[itemName].quantity--;
     }
     else
     {
