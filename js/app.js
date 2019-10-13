@@ -219,4 +219,4 @@ function renderProductList(container, storeInstance){
     }
 }
 
-renderProductList(document.getElementById("productList"), store);
+renderProductList(document.getElementById("productView"), store);
