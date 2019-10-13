@@ -2,84 +2,77 @@
 let products = {
     "Box1": {
         "label" : "Transparent Box",
-        "imageUrl" : "images/Box1_$10.png",
+        "imageUrl" : "images/Box1.png",
         "price" :  10,
         "quantity" : 5
     },
     "Box2": {
         "label" : "Colored Box",
-        "imageUrl" : "images/Box2_$5.png",
+        "imageUrl" : "images/Box2.png",
         "price" :  5,
         "quantity" : 5
     },
     "Clothes1": {
         "label" : "Women's flared dress red",
-        "imageUrl" : "images/Clothes1_$20.png",
+        "imageUrl" : "images/Clothes1.png",
         "price" :  20,
         "quantity" : 5
     },
     "Clothes2": {
         "label" : "Ladies T-Shirt",
-        "imageUrl" : "images/Clothes2_$30.png",
+        "imageUrl" : "images/Clothes2.png",
         "price" :  30,
         "quantity" : 5
     },
     "Jeans": {
         "label" : "Denim Jeans",
-        "imageUrl" : "images/Jeans_$50.png",
+        "imageUrl" : "images/Jeans.png",
         "price" :  50,
         "quantity" : 5
     },
     "Keyboard": {
         "label" : "Gaming Keyboard",
-        "imageUrl" : "images/Keyboard_$20.png",
+        "imageUrl" : "images/Keyboard.png",
         "price" :  20,
         "quantity" : 5
     },
     "Mice": {
         "label" : "Gaming Mice",
-        "imageUrl" : "images/Mice_$20.png",
+        "imageUrl" : "images/Mice.png",
         "price" :  20,
         "quantity" : 5
     },
     "PC1": {
         "label" : "Gaming PC",
-        "imageUrl" : "images/PC1_$350.png",
+        "imageUrl" : "images/PC1.png",
         "price" :  350,
         "quantity" : 5
     },
     "Tent": {
         "label" : "Camping Tent",
-        "imageUrl" : "images/Tent_$100.png",
+        "imageUrl" : "images/Tent.png",
         "price" :  100,
         "quantity" : 5
     },
 
     "KeyboardCombo": {
         "label" : "Keyboard Combo",
-        "imageUrl" : "images/KeyboardCombo_$40.png",
+        "imageUrl" : "images/KeyboardCombo.png",
         "price" :  40,
         "quantity" : 5
     },
     "PC2": {
         "label" : "Gaming PC 2",
-        "imageUrl" : "images/PC2_$400.png",
+        "imageUrl" : "images/PC2.png",
         "price" :  400,
         "quantity" : 5
     },
     "PC3": {
         "label" : "Gaming PC 3",
-        "imageUrl" : "images/PC3_$300.png",
+        "imageUrl" : "images/PC3.png",
         "price" :  300,
         "quantity" : 5
-    },
-    "foo" : {
-        "label" : "foo",
-        "imageUrl" : "null",
-        "price" : 1,
-        "quantity" : 5
-    } /*foo is added because the test 5A would fail when trying to read the label of
-      foo because it did not exist*/
+    }
 };
 
 /*
@@ -159,7 +152,7 @@ let inactiveTime = 0;
 
 function timerIncrement() {
     inactiveTime = inactiveTime + 1;
-    if (inactiveTime > 30) { // 30 seconds of inactivity
+    if (inactiveTime > 30*60) { // 30 seconds of inactivity
 
 
         alert("Hey there! Are you still planning to buy something?");
@@ -169,3 +162,61 @@ function timerIncrement() {
 }
 /*Run inactive function every second*/
 setInterval(timerIncrement,1000);
+
+//TODO conditional buttons
+function renderProduct(container, storeInstance, itemName){
+    const li = document.createElement('li');
+    li.id = `product-${itemName}`;
+
+    const img = document.createElement('img');
+    const price = document.createElement('span');
+    const text = document.createElement('span');
+
+    if(storeInstance.stock[itemName].quantity !== 0){
+        console.log(storeInstance.stock[itemName].quantity);
+        const addBtn = document.createElement('button');
+        addBtn.className = "btn-add";
+        addBtn.innerText="Add to Cart";
+        addBtn.addEventListener('click', () => {storeInstance.addItemToCart(itemName)});
+        li.appendChild(addBtn);
+    }
+
+    if(!storeInstance.cart[itemName]){
+        const rmvBtn = document.createElement('button');
+        rmvBtn.className = "btn-remove";
+        rmvBtn.innerText="Remove from Cart";
+        rmvBtn.addEventListener('click', () => {storeInstance.removeItemFromCart(itemName)});
+        li.appendChild(rmvBtn);
+    }
+
+    li.className = "product";
+    text.innerText = itemName;
+    price.innerText = '$' + storeInstance.stock[itemName].price;
+    price.className = "price";
+    img.className = "items";
+    img.src = storeInstance.stock[itemName].imageUrl;
+
+    li.appendChild(img);
+    li.appendChild(text);
+    li.appendChild(price);
+
+    container.replaceWith(li);
+}
+
+function renderProductList(container, storeInstance){
+    const ul = document.createElement('ul');
+    container.replaceWith(ul);
+    ul.style.width = "80%";
+    ul.style.columnCount = "3";
+    ul.style.cssFloat = "right";
+    ul.lineHeight = "28px";
+    ul.fontSize = "large";
+
+    for(let item in storeInstance.stock){
+        const li = document.createElement('li');
+        ul.appendChild(li);
+        renderProduct(li, storeInstance, item);
+    }
+}
+
+renderProductList(document.getElementById("productList"), store);

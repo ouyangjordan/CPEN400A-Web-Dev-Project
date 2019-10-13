@@ -4,14 +4,11 @@
     <meta charset="UTF-8">
     <title>UBC BOOKSTORE</title>
     <link rel="stylesheet" href="css/style.css">
-    <script src="js/app.js"></script>
-    <script src="http://ece.ubc.ca/~kumseok/src/cpen400a/jquery-3.3.1.min.js" type="text/javascript"></script>
-    <script src="http://ece.ubc.ca/~kumseok/src/cpen400a/test-2.js" type="text/javascript"></script>
 </head>
 <body>
     <div id = "header" class = "row">
-        <img id = "logo" class = "column" src= "images/logo.jpg" alt="Bookstore Logo">
-        <img id = "banner" class = "column" src= "images/welcome.png" alt="Welcome Banner">
+        <img id = "logo" class = "column" src= "images/logo.jpg" alt="Bookstore Logo"/>
+        <img id = "banner" class = "column" src= "images/welcome.png" alt="Welcome Banner"/>
     </div>
     <div id= "content">
         <ul id = "menu">
@@ -26,7 +23,7 @@
         </ul>
         <ul id = "productList">
             <li class="product">
-                <img class="items" src="images/Box1_$10.png"/>
+                <img class="items" src="images/Box1sdf.png"/>
                 <button class="btn-add" onclick="store.addItemToCart('Box1')">Add to Cart</button>
                 <button class="btn-remove" onclick="store.removeItemFromCart('Box1')">Remove from Cart</button>
                 <span class="price">$10</span>
@@ -85,7 +82,7 @@
             <li class="product">
                 <img class="items" src="images/Clothes2_$30.png"/>
                 <button class="btn-add" onclick="store.addItemToCart('Clothes2')">Add to Cart</button>
-                <button class="btn-remove"  onclick="store.removeItemFromCart('Clothes2')">Remove from Cart</button>
+                <button class="btn-remove" onclick="store.removeItemFromCart('Clothes2')">Remove from Cart</button>
                 <span class="price">$30</span>
                 Clothes2
             </li>
@@ -110,7 +107,6 @@
                 <span class="price">$300</span>
                 PC3
             </li>
-
         </ul>
     </div>
     <div id= "footer">
@@ -119,4 +115,7 @@
         <p>6200 University Blvd, Vancouver, BC V6T 1Z4</p>
     </div>
 </body>
+
+<script src="js/app.js"></script>
+
 </html>
