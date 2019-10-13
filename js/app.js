@@ -84,6 +84,7 @@ function Store(initialStock){
   let store = Object.create(Store.prototype)
     store.stock = initialStock;
     store.cart = {};
+    store.onUpdate = null;
     return store;
 }
 
@@ -106,6 +107,8 @@ Store.prototype.addItemToCart = function(itemName){
     {
         alert(`${products[itemName].label} is out of stock. Sorry!`);
     }
+
+    this.onUpdate(itemName);
 }
 
 Store.prototype.removeItemFromCart = function(itemName) {
@@ -122,10 +125,16 @@ Store.prototype.removeItemFromCart = function(itemName) {
     else{
         alert(`${products[itemName].label} is not in your cart. Did you mean to add it?`)
     }
+
+    this.onUpdate(itemName);
 }
 
 /* Create a global variable named store */
 let store = new Store(products);
+
+store.onUpdate = function (itemName) {
+    renderProduct(document.getElementById(`product-${itemName}`), store, itemName);
+}
 
 /* Implement a function with the signature showCart(cart), which invokes an alert to display the contents of the given cart object */
 function showCart(cart) {
@@ -172,7 +181,7 @@ function renderProduct(container, storeInstance, itemName){
     const price = document.createElement('span');
     const text = document.createElement('span');
 
-    if(storeInstance.stock[itemName].quantity !== 0){
+    if(storeInstance.stock[itemName].quantity > 0){
         console.log(storeInstance.stock[itemName].quantity);
         const addBtn = document.createElement('button');
         addBtn.className = "btn-add";
@@ -181,7 +190,7 @@ function renderProduct(container, storeInstance, itemName){
         li.appendChild(addBtn);
     }
 
-    if(!storeInstance.cart[itemName]){
+    if(storeInstance.cart[itemName]){
         const rmvBtn = document.createElement('button');
         rmvBtn.className = "btn-remove";
         rmvBtn.innerText="Remove from Cart";
