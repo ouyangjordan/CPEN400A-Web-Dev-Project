@@ -229,3 +229,108 @@ function renderProductList(container, storeInstance){
 }
 
 renderProductList(document.getElementById("productView"), store);
+
+/*
+function renderCart(){
+    renderCart (document.getElementById("modal"), store);
+}*/
+
+//removed container
+
+function renderCart(container, storeInstance){
+    //Do we even have to use the container selector?
+
+    var modalContent = document.getElementById("modal-content");
+
+    var cartItems;
+
+    var breakTag;
+
+    var increaseQuantity;
+
+    var decreaseQuantity;
+
+
+    //let res = [];
+    for (let key in storeInstance.cart) {
+        if (storeInstance.cart.hasOwnProperty(key)){
+
+            //cartItems = document.createTextNode(`${key} : ${storeInstance.cart[key]}`);
+
+            cartItems = document.createElement("span");
+
+            cartItems.innerHTML = key + " Quantity: " + storeInstance.cart[key];
+            modalContent.appendChild(cartItems);
+
+            increaseQuantity = document.createElement("button");
+            increaseQuantity.innerText = "+";
+            increaseQuantity.onclick = function(){
+                storeInstance.addItemToCart(`${key}`);
+                //Is this recursion needed?
+                cleanCartUI();
+                renderCart(container,storeInstance);
+            } 
+
+            modalContent.appendChild(increaseQuantity);
+
+            decreaseQuantity = document.createElement("button");
+            decreaseQuantity.innerText = "-";
+            decreaseQuantity.onclick = function(){
+                storeInstance.removeItemFromCart(`${key}`);
+
+                 //Delete everything in the cart like hideCart()
+                 //Is this recursion needed?
+                 cleanCartUI();
+                renderCart(container,storeInstance);
+            } 
+
+            modalContent.appendChild(decreaseQuantity);
+
+
+
+            breakTag = document.createElement("br");
+            modalContent.appendChild(breakTag);
+            //console.log(`${key} : ${storeInstance.cart[key]}` + "<br/>");
+        }
+    }
+
+    document.getElementById("modal").style.visibility="visible";
+
+}
+
+function hideCart(){
+
+    //Delete all the children here before hiding
+    document.getElementById("modal").style.visibility="hidden";
+    cleanCartUI();
+
+}
+
+//Function to update CartUI
+function cleanCartUI(){
+
+    document.getElementById("modal-content").innerHTML = "";
+
+    var hideCartButton = document.createElement("button");
+    hideCartButton.innerText = "Hide Cart";
+    hideCartButton.id = "btn-hide-cart";
+    hideCartButton.onclick = function(){
+                hideCart();
+            } 
+
+    document.getElementById("modal-content").appendChild(hideCartButton);
+
+}
+
+//Listener for key press
+document.addEventListener('keydown', closeModal);
+
+function closeModal(e) {
+  if (e.code == 'Escape') { 
+    hideCart();
+  }
+}
+
+
+
+
