@@ -129,29 +129,22 @@ Store.prototype.removeItemFromCart = function(itemName) {
     this.onUpdate(itemName);
 }
 
-/* Create a global variable named store */
 let store = new Store(products);
 
 store.onUpdate = function (itemName) {
     renderProduct(document.getElementById(`product-${itemName}`), store, itemName);
+    renderCart(document.getElementById('modal-content'), store);
 }
 
-/* Implement a function with the signature showCart(cart), which invokes an alert to display the contents of the given cart object */
+
 function showCart(cart) {
 
     //reset inactive time when performing any action
-
     inactiveTime = 0;
 
-    let res = [];
-    for (let key in cart) {
-        if (cart.hasOwnProperty(key))
-            res.push(`${key} : ${cart[key]}`);
-    }
-    if(res.length === 0)
-        alert("Your cart is currently empty!");
-    else
-        alert(`Your cart currently has the following items:\n${res.join('\n')}`);
+    document.getElementById("modal").style.visibility = "visible";
+
+    renderCart(document.getElementById("modal-content"), store);
 }
 
 /* Create global variable to keeping track of inactiveTime */
@@ -172,7 +165,7 @@ function timerIncrement() {
 /*Run inactive function every second*/
 setInterval(timerIncrement,1000);
 
-//TODO conditional buttons
+//takes a li and replaces it with the newly created li
 function renderProduct(container, storeInstance, itemName){
     const li = document.createElement('li');
     li.id = `product-${itemName}`;
@@ -182,7 +175,6 @@ function renderProduct(container, storeInstance, itemName){
     const text = document.createElement('span');
 
     if(storeInstance.stock[itemName].quantity > 0){
-        console.log(storeInstance.stock[itemName].quantity);
         const addBtn = document.createElement('button');
         addBtn.className = "btn-add";
         addBtn.innerText="Add to Cart";
@@ -212,6 +204,7 @@ function renderProduct(container, storeInstance, itemName){
     container.replaceWith(li);
 }
 
+//makes a ul element and creates li for each product in stock
 function renderProductList(container, storeInstance){
     const ul = document.createElement('ul');
     container.replaceWith(ul);
@@ -230,103 +223,68 @@ function renderProductList(container, storeInstance){
 
 renderProductList(document.getElementById("productView"), store);
 
-/*
-function renderCart(){
-    renderCart (document.getElementById("modal"), store);
-}*/
+function renderCart(container, storeInstance) {
+    const modalContent = document.createElement("div");
+    modalContent.id = "modal-content";
 
-//removed container
+    //set properties for the new modalContent
+    modalContent.style.backgroundColor = "#fefefe";
+    modalContent.style.margin = "15% auto";
+    modalContent.style.padding = "20px";
+    modalContent.style.border = "1px solid #888";
+    modalContent.style.width = "40%";
 
-function renderCart(container, storeInstance){
-    //Do we even have to use the container selector?
-
-    var modalContent = document.getElementById("modal-content");
-
-    var cartItems;
-
-    var breakTag;
-
-    var increaseQuantity;
-
-    var decreaseQuantity;
-
-
-    //let res = [];
     for (let key in storeInstance.cart) {
-        if (storeInstance.cart.hasOwnProperty(key)){
 
-            //cartItems = document.createTextNode(`${key} : ${storeInstance.cart[key]}`);
+        const cartItem = document.createElement("span");
 
-            cartItems = document.createElement("span");
+        cartItem.innerText = `${key}  :  ${storeInstance.cart[key]}    `;
+        modalContent.appendChild(cartItem);
 
-            cartItems.innerHTML = key + " Quantity: " + storeInstance.cart[key];
-            modalContent.appendChild(cartItems);
+        const increaseQuantity = document.createElement("button");
+        increaseQuantity.innerText = "+";
 
-            increaseQuantity = document.createElement("button");
-            increaseQuantity.innerText = "+";
-            increaseQuantity.onclick = function(){
-                storeInstance.addItemToCart(`${key}`);
-                //Is this recursion needed?
-                cleanCartUI();
-                renderCart(container,storeInstance);
-            } 
-
-            modalContent.appendChild(increaseQuantity);
-
-            decreaseQuantity = document.createElement("button");
-            decreaseQuantity.innerText = "-";
-            decreaseQuantity.onclick = function(){
-                storeInstance.removeItemFromCart(`${key}`);
-
-                 //Delete everything in the cart like hideCart()
-                 //Is this recursion needed?
-                 cleanCartUI();
-                renderCart(container,storeInstance);
-            } 
-
-            modalContent.appendChild(decreaseQuantity);
-
-
-
-            breakTag = document.createElement("br");
-            modalContent.appendChild(breakTag);
-            //console.log(`${key} : ${storeInstance.cart[key]}` + "<br/>");
+        increaseQuantity.onclick = function(){
+            storeInstance.addItemToCart(`${key}`);
         }
+
+        modalContent.appendChild(increaseQuantity);
+
+        const decreaseQuantity = document.createElement("button");
+        decreaseQuantity.innerText = "-";
+
+        decreaseQuantity.onclick = function(){
+            storeInstance.removeItemFromCart(`${key}`);
+        }
+
+        modalContent.appendChild(decreaseQuantity);
+
+        const breakTag = document.createElement("br");
+        modalContent.appendChild(breakTag);
     }
 
-    document.getElementById("modal").style.visibility="visible";
-
-}
-
-function hideCart(){
-
-    //Delete all the children here before hiding
-    document.getElementById("modal").style.visibility="hidden";
-    cleanCartUI();
-
-}
-
-//Function to update CartUI
-function cleanCartUI(){
-
-    document.getElementById("modal-content").innerHTML = "";
-
-    var hideCartButton = document.createElement("button");
+    const hideCartButton = document.createElement("button");
     hideCartButton.innerText = "Hide Cart";
     hideCartButton.id = "btn-hide-cart";
     hideCartButton.onclick = function(){
-                hideCart();
-            } 
+        hideCart();
+    }
 
-    document.getElementById("modal-content").appendChild(hideCartButton);
+    modalContent.appendChild(hideCartButton);
 
+    container.replaceWith(modalContent);
 }
+
+function hideCart(){
+    document.getElementById("modal").style.visibility="hidden";
+}
+
 
 //Listener for key press
 document.addEventListener('keydown', closeModal);
 
 function closeModal(e) {
-  if (e.code == 'Escape') { 
+  if (e.code == 'Escape') {
     hideCart();
   }
 }

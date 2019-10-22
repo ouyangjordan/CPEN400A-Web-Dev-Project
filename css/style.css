@@ -187,10 +187,6 @@ ul {
     background-color: blue;
     background-color: black;
 }
-/*
-#modal {
-    visibility: hidden;
-}*/
 
 #modal {
   visibility: hidden; /* Hidden by default */
