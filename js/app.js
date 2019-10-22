@@ -151,7 +151,6 @@ function showCart(cart) {
 let inactiveTime = 0;
 
 /*Function to increment timer when inactive*/
-
 function timerIncrement() {
     inactiveTime = inactiveTime + 1;
     if (inactiveTime > 30*60) { // 30 seconds of inactivity
@@ -162,6 +161,7 @@ function timerIncrement() {
         inactiveTime = 0;
     }
 }
+
 /*Run inactive function every second*/
 setInterval(timerIncrement,1000);
 
@@ -278,7 +278,6 @@ function renderCart(container, storeInstance) {
 function hideCart(){
     document.getElementById("modal").style.visibility="hidden";
 }
-
 
 //Listener for key press
 document.addEventListener('keydown', closeModal);
