@@ -1,91 +1,13 @@
-/* global variable named products and then assign it an associative array (i.e. an object) that will store information about the products */
-let products = {
-    "Box1": {
-        "label" : "Transparent Box",
-        "imageUrl" : "images/Box1.png",
-        "price" :  10,
-        "quantity" : 5
-    },
-    "Box2": {
-        "label" : "Colored Box",
-        "imageUrl" : "images/Box2.png",
-        "price" :  5,
-        "quantity" : 5
-    },
-    "Clothes1": {
-        "label" : "Women's flared dress red",
-        "imageUrl" : "images/Clothes1.png",
-        "price" :  20,
-        "quantity" : 5
-    },
-    "Clothes2": {
-        "label" : "Ladies T-Shirt",
-        "imageUrl" : "images/Clothes2.png",
-        "price" :  30,
-        "quantity" : 5
-    },
-    "Jeans": {
-        "label" : "Denim Jeans",
-        "imageUrl" : "images/Jeans.png",
-        "price" :  50,
-        "quantity" : 5
-    },
-    "Keyboard": {
-        "label" : "Gaming Keyboard",
-        "imageUrl" : "images/Keyboard.png",
-        "price" :  20,
-        "quantity" : 5
-    },
-    "Mice": {
-        "label" : "Gaming Mice",
-        "imageUrl" : "images/Mice.png",
-        "price" :  20,
-        "quantity" : 5
-    },
-    "PC1": {
-        "label" : "Gaming PC",
-        "imageUrl" : "images/PC1.png",
-        "price" :  350,
-        "quantity" : 5
-    },
-    "Tent": {
-        "label" : "Camping Tent",
-        "imageUrl" : "images/Tent.png",
-        "price" :  100,
-        "quantity" : 5
-    },
-
-    "KeyboardCombo": {
-        "label" : "Keyboard Combo",
-        "imageUrl" : "images/KeyboardCombo.png",
-        "price" :  40,
-        "quantity" : 5
-    },
-    "PC2": {
-        "label" : "Gaming PC 2",
-        "imageUrl" : "images/PC2.png",
-        "price" :  400,
-        "quantity" : 5
-    },
-    "PC3": {
-        "label" : "Gaming PC 3",
-        "imageUrl" : "images/PC3.png",
-        "price" :  300,
-        "quantity" : 5
-    }
-};
-
 /*
 * Constructor function for creating a store object
 * Store object will keep track of the items in the store and the items in the cart
 */
-function Store(initialStock){
-
-  let store = Object.create(Store.prototype)
-    store.stock = initialStock;
-    store.cart = {};
-    store.onUpdate = null;
-    return store;
+function Store(serverUrl){
+  this.serverUrl = serverUrl;
+  this.stock = {};
+  this.cart = {};
+  this.onUpdate = null;
+  this.syncWithServer = null;
 }
 
 Store.prototype.addItemToCart = function(itemName){
@@ -109,7 +31,7 @@ Store.prototype.addItemToCart = function(itemName){
     }
 
     this.onUpdate(itemName);
-}
+};
 
 Store.prototype.removeItemFromCart = function(itemName) {
 
@@ -127,15 +49,32 @@ Store.prototype.removeItemFromCart = function(itemName) {
     }
 
     this.onUpdate(itemName);
-}
+};
 
-let store = new Store(products);
+let store = new Store('https://cpen400a-bookstore.herokuapp.com/');
 
 store.onUpdate = function (itemName) {
-    renderProduct(document.getElementById(`product-${itemName}`), store, itemName);
-    renderCart(document.getElementById('modal-content'), store);
-}
+    if(!itemName){
+        renderProductList(document.getElementById('productView'), store);
+    }
+    else{
+        renderProduct(document.getElementById(`product-${itemName}`), store, itemName);
+        renderCart(document.getElementById('modal-content'), store);
+    }
+};
 
+store.syncWithServer = function (onSync) {
+    let newProducts = ajaxGet(`${this.serverUrl}/products`,
+        function () {
+            alert('success')
+        },
+        function () {
+            alert('error')
+        });
+
+    if(newProducts)
+        computedelta(store, newProducts);
+};
 
 function showCart(cart) {
 
@@ -283,10 +222,58 @@ function hideCart(){
 document.addEventListener('keydown', closeModal);
 
 function closeModal(e) {
-  if (e.code == 'Escape') {
+  if (e.code === 'Escape') {
     hideCart();
   }
 }
+
+
+/*
+1. try to get the data by calling the url
+2. on success call the onSuccess function
+3. on failure (timeout/500) try three times
+3. if still failure call onError function
+4. On success, Convert the response payload into a JavaScript object and then pass it as the argument.
+This is the only argument onSuccess takes
+ */
+function ajaxGet(url, onSuccess, onError) {
+    $.ajax({
+        url: url,
+        type: 'GET',
+        data: {
+            format: 'json'
+        },
+        tryCount : 0,
+        retryLimit : 3,
+        error: function(xhr, textStatus, err) {
+            if (textStatus === 'timeout' || xhr.status === 500) {
+                this.tryCount++;
+                if (this.tryCount <= this.retryLimit) {
+                    //try again
+                    console.log(`${this.tryCount} call to the server failed. Trying again ...`);
+                    $.ajax(this);
+                }
+            }
+            else {
+                //handle error
+                onError(err);
+            }
+        },
+        success: function(data) {
+            console.log(`Request successful. Calling the onSuccess method with the data`);
+            console.log(data);
+            onSuccess(data);
+        }
+    });
+}
+
+ajaxGet("https://cpen400a-bookstore.herokuapp.com/products",
+    function () {
+        alert('SUCCESSS')
+    },
+    function () {
+        alert('ERROR')
+    });
 
 
 
