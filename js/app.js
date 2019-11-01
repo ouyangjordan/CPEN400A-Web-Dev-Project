@@ -51,7 +51,9 @@ Store.prototype.removeItemFromCart = function(itemName) {
     this.onUpdate(itemName);
 };
 
-let store = new Store('https://cpen400a-bookstore.herokuapp.com/');
+let store = new Store('https://cpen400a-bookstore.herokuapp.com');
+
+store.syncWithServer();
 
 store.onUpdate = function (itemName) {
     if(!itemName){
@@ -64,17 +66,53 @@ store.onUpdate = function (itemName) {
 };
 
 store.syncWithServer = function (onSync) {
-    let newProducts = ajaxGet(`${this.serverUrl}/products`,
-        function () {
-            alert('success')
-        },
-        function () {
-            alert('error')
-        });
+    let delta;
 
-    if(newProducts)
-        computedelta(store, newProducts);
+    ajaxGet(`${this.serverUrl}/products`,
+    function (newProducts) {
+        delta = computeDelta(newProducts, this);
+        updateStock(newProducts);
+        console.log(this.stock);
+        console.log(delta);
+    },
+    function () {
+        alert('error')
+    });
+
+    if(onSync) onSync(delta);
 };
+
+// Update Stock with consideration of the current items in the cart
+function updateStock(newProducts, storeInstance) {
+    storeInstance.stock = JSON.parse(JSON.stringify(newProducts));
+    const items = Object.keys(storeInstance.stock);
+
+    //check if any item in the cart and adjust
+    for(const item of items){
+        if(storeInstance.cart[`${item}`])
+            storeInstance.stock[`${item}`].quantity = storeInstance.stock[`${item}`].quantity - storeInstance.cart[`${item}`];
+    }
+}
+
+// computes delta + initializes stock when its empty or null
+function computeDelta(newProducts, storeInstance) {
+    let delta = {};
+    const items = Object.keys(newProducts);
+    if(!storeInstance.stock || storeInstance.stock.length === 0){
+        // deep clone the newProducts to delta and stock
+        storeInstance.stock = JSON.parse(JSON.stringify(newProducts));
+        for(const item of items){
+            delta[`${item}`] = {price: newProducts[item].price, quantity: newProducts[item].quantity};
+        }
+    }
+    else {
+        for(const item of items){
+            delta[`${item}`] = { price: newProducts[item].price - storeInstance.stock[item].price,
+                quantity: newProducts[item].quantity - storeInstance.stock[item].quantity };
+        }
+    }
+    return delta;
+}
 
 function showCart(cart) {
 
@@ -194,7 +232,7 @@ function renderCart(container, storeInstance) {
 
         decreaseQuantity.onclick = function(){
             storeInstance.removeItemFromCart(`${key}`);
-        }
+        };
 
         modalContent.appendChild(decreaseQuantity);
 
@@ -207,7 +245,7 @@ function renderCart(container, storeInstance) {
     hideCartButton.id = "btn-hide-cart";
     hideCartButton.onclick = function(){
         hideCart();
-    }
+    };
 
     modalContent.appendChild(hideCartButton);
 
@@ -261,20 +299,9 @@ function ajaxGet(url, onSuccess, onError) {
         },
         success: function(data) {
             console.log(`Request successful. Calling the onSuccess method with the data`);
-            console.log(data);
             onSuccess(data);
         }
     });
 }
-
-ajaxGet("https://cpen400a-bookstore.herokuapp.com/products",
-    function () {
-        alert('SUCCESSS')
-    },
-    function () {
-        alert('ERROR')
-    });
-
-
 
 
