@@ -53,8 +53,6 @@ Store.prototype.removeItemFromCart = function(itemName) {
 
 let store = new Store('https://cpen400a-bookstore.herokuapp.com');
 
-store.syncWithServer();
-
 store.onUpdate = function (itemName) {
     if(!itemName){
         renderProductList(document.getElementById('productView'), store);
@@ -70,10 +68,9 @@ store.syncWithServer = function (onSync) {
 
     ajaxGet(`${this.serverUrl}/products`,
     function (newProducts) {
-        delta = computeDelta(newProducts, this);
-        updateStock(newProducts);
-        console.log(this.stock);
-        console.log(delta);
+        delta = computeDelta(newProducts, store);
+        updateStock(newProducts, store);
+        store.onUpdate();
     },
     function () {
         alert('error')
@@ -82,6 +79,8 @@ store.syncWithServer = function (onSync) {
     if(onSync) onSync(delta);
 };
 
+store.syncWithServer();
+
 // Update Stock with consideration of the current items in the cart
 function updateStock(newProducts, storeInstance) {
     storeInstance.stock = JSON.parse(JSON.stringify(newProducts));
@@ -89,7 +88,7 @@ function updateStock(newProducts, storeInstance) {
 
     //check if any item in the cart and adjust
     for(const item of items){
-        if(storeInstance.cart[`${item}`])
+        if(Object.entries(storeInstance.cart).length !== 0 && storeInstance.cart.hasOwnProperty(item))
             storeInstance.stock[`${item}`].quantity = storeInstance.stock[`${item}`].quantity - storeInstance.cart[`${item}`];
     }
 }
@@ -98,7 +97,8 @@ function updateStock(newProducts, storeInstance) {
 function computeDelta(newProducts, storeInstance) {
     let delta = {};
     const items = Object.keys(newProducts);
-    if(!storeInstance.stock || storeInstance.stock.length === 0){
+    // if stock is empty
+    if(Object.entries(storeInstance.stock).length === 0){
         // deep clone the newProducts to delta and stock
         storeInstance.stock = JSON.parse(JSON.stringify(newProducts));
         for(const item of items){
@@ -184,6 +184,7 @@ function renderProduct(container, storeInstance, itemName){
 //makes a ul element and creates li for each product in stock
 function renderProductList(container, storeInstance){
     const ul = document.createElement('ul');
+    ul.id = "productView";
     container.replaceWith(ul);
     ul.style.width = "80%";
     ul.style.columnCount = "3";
@@ -191,7 +192,9 @@ function renderProductList(container, storeInstance){
     ul.lineHeight = "28px";
     ul.fontSize = "large";
 
-    for(let item in storeInstance.stock){
+    const items = Object.keys(storeInstance.stock);
+
+    for(const item of items){
         const li = document.createElement('li');
         ul.appendChild(li);
         renderProduct(li, storeInstance, item);
@@ -223,7 +226,7 @@ function renderCart(container, storeInstance) {
 
         increaseQuantity.onclick = function(){
             storeInstance.addItemToCart(`${key}`);
-        }
+        };
 
         modalContent.appendChild(increaseQuantity);
 
@@ -248,6 +251,15 @@ function renderCart(container, storeInstance) {
     };
 
     modalContent.appendChild(hideCartButton);
+
+    const checkOutButton = document.createElement("button");
+    checkOutButton.innerText = "Check Out";
+    checkOutButton.id = "btn-check-out";
+    checkOutButton.onclick = function(){
+        hideCart();
+    };
+
+    modalContent.appendChild(checkOutButton);
 
     container.replaceWith(modalContent);
 }
