@@ -7,13 +7,13 @@ function Store(serverUrl){
   this.stock = {};
   this.cart = {};
   this.onUpdate = null;
-  this.syncWithServer = null;
+  this.checkOut = null;
 }
+
 
 Store.prototype.addItemToCart = function(itemName){
 
     //reset inactive time when performing any action
-
     inactiveTime = 0;
 
     if(this.stock[itemName].quantity > 0)
@@ -27,7 +27,7 @@ Store.prototype.addItemToCart = function(itemName){
     }
     else
     {
-        alert(`${products[itemName].label} is out of stock. Sorry!`);
+        alert(`${products[itemName].label} is out of stock. Sorry!`); //This line is causing test failures
     }
 
     this.onUpdate(itemName);
@@ -38,7 +38,6 @@ Store.prototype.removeItemFromCart = function(itemName) {
     //reset inactive time when performing any action
 
     inactiveTime = 0;
-
     if(this.cart[itemName]){
         this.cart[itemName]--;
         if(this.cart[itemName] === 0) delete this.cart[itemName];
@@ -53,7 +52,9 @@ Store.prototype.removeItemFromCart = function(itemName) {
 
 let store = new Store('https://cpen400a-bookstore.herokuapp.com');
 
+
 store.onUpdate = function (itemName) {
+
     if(!itemName){
         renderProductList(document.getElementById('productView'), store);
     }
@@ -63,23 +64,32 @@ store.onUpdate = function (itemName) {
     }
 };
 
-store.syncWithServer = function (onSync) {
+Store.prototype.syncWithServer = function(onSync){
     let delta;
 
     ajaxGet(`${this.serverUrl}/products`,
+
     function (newProducts) {
         delta = computeDelta(newProducts, store);
         updateStock(newProducts, store);
-        store.onUpdate();
+
+        //Test fails but it does get called
+        store.onUpdate(); //This needs to call the overridden function
+        //store.onUpdate.call(this);
+        if(onSync)onSync(delta);
     },
+
     function () {
         alert('error')
     });
 
-    if(onSync) onSync(delta);
-};
+}
 
-store.syncWithServer();
+
+$(document).ready(function(){
+    store.syncWithServer()
+});
+
 
 // Update Stock with consideration of the current items in the cart
 function updateStock(newProducts, storeInstance) {
@@ -102,13 +112,19 @@ function computeDelta(newProducts, storeInstance) {
         // deep clone the newProducts to delta and stock
         storeInstance.stock = JSON.parse(JSON.stringify(newProducts));
         for(const item of items){
-            delta[`${item}`] = {price: newProducts[item].price, quantity: newProducts[item].quantity};
+            delta[`${item}`] = {price: newProducts[item].price, quantity: newProducts[item].quantity
+                ,label: newProducts[item].label };
+
+            //do we need to add , label: newProducts[item].label here somewhere?
+
+            //console.log(newProducts[item].label);
         }
     }
     else {
         for(const item of items){
             delta[`${item}`] = { price: newProducts[item].price - storeInstance.stock[item].price,
-                quantity: newProducts[item].quantity - storeInstance.stock[item].quantity };
+                quantity: newProducts[item].quantity - storeInstance.stock[item].quantity ,
+            label: newProducts[item].label };
         }
     }
     return delta;
@@ -131,8 +147,6 @@ let inactiveTime = 0;
 function timerIncrement() {
     inactiveTime = inactiveTime + 1;
     if (inactiveTime > 30*60) { // 30 seconds of inactivity
-
-
         alert("Hey there! Are you still planning to buy something?");
         //On ok of alert reset timer
         inactiveTime = 0;
@@ -179,6 +193,65 @@ function renderProduct(container, storeInstance, itemName){
     li.appendChild(price);
 
     container.replaceWith(li);
+}
+
+
+Store.prototype.checkOut = function(onFinish){
+
+    store.syncWithServer(function(delta){
+
+        var messageToPost = "";
+
+        if(delta){
+        for (var property in delta) {
+
+            //console.log(delta[property]);
+
+            if(delta[property] != null){
+                if(delta[property].price != null && delta[property].price != 0){
+                    //Here we update the prices of our items in stock
+
+                    var oldPrice = store.stock[property].price;
+                    var newPrice = (oldPrice + delta[property].price).toString();
+                    oldPrice = oldPrice.toString();
+
+                    store.stock[property].price = store.stock[property].price + delta[property].price; //Here we update the price
+                    //of our items in stock
+
+                    //If the price changed we update that in our alert
+                    messageToPost = messageToPost + "Price of " + property + " changed from " + oldPrice + " to "  +  newPrice + "\n";
+                }
+
+                if(delta[property].quantity != null && delta[property].quantity != 0){
+
+                    var previousStock = store.stock[property].quantity;
+                    var newStock = (previousStock + delta[property].quantity).toString();
+                    previousStock = previousStock.toString();
+
+
+                    messageToPost = messageToPost + "Quantity of " + property + " changed from " + previousStock + 
+                    " to " + newStock + "\n";
+
+                    store.stock[property].quantity = store.stock[property].quantity + delta[property].quantity;
+                    //We update the quantity of items 
+                }
+            }
+        }
+
+        if(messageToPost == ""){
+            for (var property in store.cart){
+                console.log(store.cart[property]);
+            }
+            messageToPost = "The total amount due is" ;
+        }
+        alert(messageToPost);
+        } else {
+
+        }
+    });
+
+    if(onFinish) onFinish();//This calls the callback function
+
 }
 
 //makes a ul element and creates li for each product in stock
@@ -253,16 +326,26 @@ function renderCart(container, storeInstance) {
     modalContent.appendChild(hideCartButton);
 
     const checkOutButton = document.createElement("button");
-    checkOutButton.innerText = "Check Out";
     checkOutButton.id = "btn-check-out";
+    checkOutButton.innerText = "Check Out";
+    
+    
     checkOutButton.onclick = function(){
-        hideCart();
-    };
+
+        document.getElementById("btn-check-out").disabled = true;
+
+
+        //storeInstance.checkOut() is giving me "not a function"
+        Store.prototype.checkOut(function(){
+            document.getElementById("btn-check-out").disabled = false;
+        });
+    }
 
     modalContent.appendChild(checkOutButton);
 
     container.replaceWith(modalContent);
 }
+
 
 function hideCart(){
     document.getElementById("modal").style.visibility="hidden";
@@ -286,34 +369,39 @@ function closeModal(e) {
 4. On success, Convert the response payload into a JavaScript object and then pass it as the argument.
 This is the only argument onSuccess takes
  */
+
+//var tryCount = 0;
+//var retryLimit = 3;
 function ajaxGet(url, onSuccess, onError) {
     $.ajax({
         url: url,
+        timeout: 3000,
         type: 'GET',
+        tryCount : 0,
+        retryLimit : 3,
         data: {
             format: 'json'
         },
-        tryCount : 0,
-        retryLimit : 3,
         error: function(xhr, textStatus, err) {
             if (textStatus === 'timeout' || xhr.status === 500) {
                 this.tryCount++;
-                if (this.tryCount <= this.retryLimit) {
+                if (this.tryCount < this.retryLimit) {
                     //try again
                     console.log(`${this.tryCount} call to the server failed. Trying again ...`);
                     $.ajax(this);
+                } else {
+                    //Call erorr function after 3 tries and reset tryCount
+                    onError(err);
+                    this.tryCount = 0;
                 }
-            }
-            else {
-                //handle error
-                onError(err);
             }
         },
         success: function(data) {
             console.log(`Request successful. Calling the onSuccess method with the data`);
+            this.tryCount = 0;
             onSuccess(data);
         }
     });
 }
 
-
+var TEST_SERVER = "https://cpen400a-bookstore.herokuapp.com";
