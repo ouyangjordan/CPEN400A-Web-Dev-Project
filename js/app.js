@@ -10,7 +10,6 @@ function Store(serverUrl){
   this.checkOut = null;
 }
 
-
 Store.prototype.addItemToCart = function(itemName){
 
     //reset inactive time when performing any action
@@ -66,6 +65,7 @@ store.onUpdate = function (itemName) {
 
 Store.prototype.syncWithServer = function(onSync){
     let delta;
+    let that = this;
 
     ajaxGet(`${this.serverUrl}/products`,
 
@@ -73,9 +73,7 @@ Store.prototype.syncWithServer = function(onSync){
         delta = computeDelta(newProducts, store);
         updateStock(newProducts, store);
 
-        //Test fails but it does get called
-        store.onUpdate(); //This needs to call the overridden function
-        //store.onUpdate.call(this);
+        that.onUpdate();
         if(onSync)onSync(delta);
     },
 
@@ -83,7 +81,7 @@ Store.prototype.syncWithServer = function(onSync){
         alert('error')
     });
 
-}
+};
 
 
 $(document).ready(function(){
@@ -403,5 +401,3 @@ function ajaxGet(url, onSuccess, onError) {
         }
     });
 }
-
-var TEST_SERVER = "https://cpen400a-bookstore.herokuapp.com";
