@@ -21,17 +21,8 @@ Store.prototype.checkOut = function(onFinish){
             if(delta[property] != null){
                 if(delta[property].price != null && delta[property].price != 0){
                     //Here we update the prices of our items in stock
-
-                    //var oldPrice = store.stock[property].price;
-                    //var newPrice = (oldPrice - delta[property].price).toString();
-
                     var newPrice = store.stock[property].price;
                     var oldPrice = (newPrice - delta[property].price).toString();
-
-
-                    //newProducts[item].price - storeInstance.stock[item].price,
-
-                    oldPrice = oldPrice.toString();
 
                     store.stock[property].price = store.stock[property].price + delta[property].price; //Here we update the price
                     //of our items in stock
@@ -46,7 +37,7 @@ Store.prototype.checkOut = function(onFinish){
                     //var newStock = (previousStock + delta[property].quantity).toString();
 
                     var newStock = store.stock[property].quantity;
-                    var previousStock = (newStock + delta[property].quantity).toString();
+                    var previousStock = (newStock - delta[property].quantity).toString();
                     previousStock = previousStock.toString();
 
 
@@ -184,17 +175,38 @@ function computeDelta(newProducts, storeInstance) {
         for(const item of items){
             delta[`${item}`] = {price: newProducts[item].price, quantity: newProducts[item].quantity
                 ,label: newProducts[item].label };
-
-            //do we need to add , label: newProducts[item].label here somewhere?
-
-            //console.log(newProducts[item].label);
         }
     }
     else {
         for(const item of items){
+
+            delta[`${item}`] = { label: newProducts[item].label};
+
+
+            if(newProducts[item].price != storeInstance.stock[item].price){
+                delta[`${item}`] = { price: newProducts[item].price - storeInstance.stock[item].price};
+            }
+            //quantity of items = storeInstance.stock[item].quantity + storeInstance.cart[item]
+            if(storeInstance.cart[item] > newProducts[item].price){
+
+                delta[`${item}`] = {quantity: newProducts[item].quantity - (storeInstance.stock[item].quantity + storeInstance.cart[item])};
+
+                storeInstance.cart[item] = newProducts[item].quantity;
+                storeInstance.stock[item] = 0;
+            } else if ((storeInstance.stock[item].quantity + storeInstance.cart[item]) != newProducts[item].quantity){
+
+                delta[`${item}`] = {quantity: newProducts[item].quantity - (storeInstance.stock[item].quantity + storeInstance.cart[item])};
+          
+                //case where there is no items in the cart
+                if(!storeInstance.cart[item]){
+                    delta[`${item}`] = {quantity: newProducts[item].quantity - (storeInstance.stock[item].quantity)};
+                }
+            }
+            
+            /*
             delta[`${item}`] = { price: newProducts[item].price - storeInstance.stock[item].price,
                 quantity: newProducts[item].quantity - storeInstance.stock[item].quantity ,
-            label: newProducts[item].label };
+            label: newProducts[item].label };*/
         }
     }
     return delta;
