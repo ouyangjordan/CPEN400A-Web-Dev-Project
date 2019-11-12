@@ -182,12 +182,13 @@ function computeDelta(newProducts, storeInstance) {
 
             delta[`${item}`] = { label: newProducts[item].label};
 
-
+            //only show updated price if there is an updated price
             if(newProducts[item].price != storeInstance.stock[item].price){
                 delta[`${item}`] = { price: newProducts[item].price - storeInstance.stock[item].price};
             }
             //quantity of items = storeInstance.stock[item].quantity + storeInstance.cart[item]
-            if(storeInstance.cart[item] > newProducts[item].price){
+
+            if(storeInstance.cart[item] > newProducts[item].quantity){
 
                 delta[`${item}`] = {quantity: newProducts[item].quantity - (storeInstance.stock[item].quantity + storeInstance.cart[item])};
 
