@@ -7,7 +7,6 @@ function Store(serverUrl){
   this.stock = {};
   this.cart = {};
   this.onUpdate = null;
- //this.checkOut = null;
 }
 
 
@@ -19,15 +18,19 @@ Store.prototype.checkOut = function(onFinish){
 
         if(delta){
         for (var property in delta) {
-
-            //console.log(delta[property]);
-
             if(delta[property] != null){
                 if(delta[property].price != null && delta[property].price != 0){
                     //Here we update the prices of our items in stock
 
-                    var oldPrice = store.stock[property].price;
-                    var newPrice = (oldPrice + delta[property].price).toString();
+                    //var oldPrice = store.stock[property].price;
+                    //var newPrice = (oldPrice - delta[property].price).toString();
+
+                    var newPrice = store.stock[property].price;
+                    var oldPrice = (newPrice - delta[property].price).toString();
+
+
+                    //newProducts[item].price - storeInstance.stock[item].price,
+
                     oldPrice = oldPrice.toString();
 
                     store.stock[property].price = store.stock[property].price + delta[property].price; //Here we update the price
@@ -39,30 +42,40 @@ Store.prototype.checkOut = function(onFinish){
 
                 if(delta[property].quantity != null && delta[property].quantity != 0){
 
-                    var previousStock = store.stock[property].quantity;
-                    var newStock = (previousStock + delta[property].quantity).toString();
+                    //var previousStock = store.stock[property].quantity;
+                    //var newStock = (previousStock + delta[property].quantity).toString();
+
+                    var newStock = store.stock[property].quantity;
+                    var previousStock = (newStock + delta[property].quantity).toString();
                     previousStock = previousStock.toString();
 
 
                     messageToPost = messageToPost + "Quantity of " + property + " changed from " + previousStock + 
                     " to " + newStock + "\n";
 
-                    store.stock[property].quantity = store.stock[property].quantity + delta[property].quantity;
+                    //store.stock[property].quantity = store.stock[property].quantity + delta[property].quantity;
                     //We update the quantity of items 
                 }
             }
         }
 
+
+        //case where there was no change in stock
+        //Calculate the total price of the items in the cart
+        var totalPrice = 0;
         if(messageToPost == ""){
             for (var property in store.cart){
-                console.log(store.cart[property]);
+
+                //store.cart[property] gives the quantity of the items in the cart
+
+                totalPrice = totalPrice + (store.cart[property] * store.stock[property].price);
             }
-            messageToPost = "The total amount due is" ;
-        }
-        alert(messageToPost);
-        } else {
+            messageToPost = "The total amount due is $" + totalPrice.toString();
+
 
         }
+        alert(messageToPost);
+        } 
     });
 
     if(onFinish) onFinish();//This calls the callback function
@@ -85,7 +98,7 @@ Store.prototype.addItemToCart = function(itemName){
     }
     else
     {
-        //alert(`${newProducts[itemName].label} is out of stock. Sorry!`); //This line is causing test failures
+        alert(`${store.stock[itemName].label} is out of stock. Sorry!`); //This line is causing test failures
     }
 
     this.onUpdate(itemName);
@@ -102,7 +115,7 @@ Store.prototype.removeItemFromCart = function(itemName) {
         this.stock[itemName].quantity++;
     }
     else{
-        //alert(`${newProducts[itemName].label} is not in your cart. Did you mean to add it?`)
+        alert(`${store.stock[itemName].label} is not in your cart. Did you mean to add it?`)
     }
 
     this.onUpdate(itemName);
@@ -123,7 +136,7 @@ store.onUpdate = function (itemName) {
 };
 
 Store.prototype.syncWithServer = function(onSync){
-    let delta;
+    let delta = {};
     let that = this;
 
     ajaxGet(`${this.serverUrl}/products`,
@@ -191,9 +204,7 @@ function showCart(cart) {
 
     //reset inactive time when performing any action
     inactiveTime = 0;
-
     document.getElementById("modal").style.visibility = "visible";
-
     renderCart(document.getElementById("modal-content"), store);
 }
 
@@ -333,22 +344,16 @@ function renderCart(container, storeInstance) {
     checkOutButton.innerText = "Check Out";
 
     checkOutButton.addEventListener('click', function(){
-
-        //document.getElementById("btn-check-out").disabled = true;
         this.disabled = true;
-        console.log(this.disabled);
-
-        //storeInstance.checkOut() is giving me "not a function"
-        Store.prototype.checkOut(function(){
-            //document.getElementById("btn-check-out").disabled = false;
+        store.checkOut(function(){
+            document.getElementById("btn-check-out").disabled = false;
         });
+
     });
 
 
     modalContent.appendChild(checkOutButton);
-
     container.innerHTML = '';
-
     container.appendChild(modalContent);
 
     //This now works compared with the previous 
@@ -365,7 +370,6 @@ document.addEventListener('keydown', closeModal);
 function closeModal(e) {
   if (e.code === 'Escape') {
     hideCart();
-    test4B();
   }
 }
 
@@ -412,89 +416,3 @@ function ajaxGet(url, onSuccess, onError) {
         }
     });
 }
-
-var TEST_SERVER = "https://cpen400a-bookstore.herokuapp.com";
-
- function test4B() {
-        var marks = 0;
-        var comments = [];
-        var requests = [];
-        if (!Store.prototype.checkOut) console.log('"checkOut" method not defined');
-        else if (!(Store.prototype.checkOut instanceof Function)) comments.push('"checkOut" not a function');
-        else {
-            var testStore = new Store(TEST_SERVER + "/test");
-            testStore.stock = store.stock;
-            testStore.onUpdate = function() {};
-            requests.push(new Promise(function(resolve, reject) {
-                var isPending = true;
-                testStore.addItemToCart("Box1");
-                testStore.addItemToCart("Box1");
-                testStore.addItemToCart("Box2");
-                testStore.checkOut(function() {
-                    marks += 1;
-                    isPending = false;
-                    console.log("marks 1");
-                    resolve()
-                });
-                setTimeout(function() {
-                    if (isPending) {
-                        comments.push('Timeout: "onFinish" was not called');
-                        resolve()
-                    }
-                }, 5e3)
-            }));
-            var testStore2 = new Store(TEST_SERVER + "/test");
-            testStore2.stock = {};
-            testStore2.onUpdate = function() {};
-            requests.push(new Promise(function(resolve, reject) {
-                var isPending = true;
-                testStore2.syncWithServer = function(onSync) {
-                    marks += 1;
-                    isPending = false;
-                    console.log("marks 2");
-                    resolve();
-                    typeof onSync === "function" && onSync({})
-                };
-                testStore2.checkOut();
-                setTimeout(function() {
-                    if (isPending) {
-                        comments.push('Timeout: "syncWithServer" was not called');
-                        resolve()
-                    }
-                }, 5e3)
-            }))
-        }
-        return Promise.all(requests).then(function(resolved) {
-            return {
-                marks: marks,
-                comments: comments
-            }
-        })
-    }
-
-
-function searchEventListener(element, eventName, matchFunc) {
-        console.log("In SEL");
-
-        console.log(element);
-        //if (element["on" + eventName]) {
-        if (false) {
-            console.log("in 0");
-            var onEvent = element["on" + eventName];
-            if (matchFunc(onEvent)) {
-                return onEvent
-            }
-        } else if (element.__listeners) {
-
-            console.log("In 1");
-            var listeners = element.__listeners[eventName];
-            if (listeners) {
-                for (var i = 0; i < listeners.length; i++) {
-                    var onEvent = listeners[i];
-                    if (matchFunc(onEvent)) {
-                        return onEvent
-                    }
-                }
-            }
-        }
-    }
