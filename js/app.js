@@ -38,8 +38,6 @@ Store.prototype.checkOut = function(onFinish){
 
                     var newStock = store.stock[property].quantity;
                     var previousStock = (newStock - delta[property].quantity).toString();
-                    previousStock = previousStock.toString();
-
 
                     messageToPost = messageToPost + "Quantity of " + property + " changed from " + previousStock + 
                     " to " + newStock + "\n";
