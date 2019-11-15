@@ -52,7 +52,7 @@ Store.prototype.checkOut = function(onFinish){
         //case where there was no change in stock
         //Calculate the total price of the items in the cart
         var totalPrice = 0;
-        if(messageToPost == ""){
+        if(messageToPost === ""){
             for (var property in store.cart){
 
                 //store.cart[property] gives the quantity of the items in the cart
@@ -69,7 +69,7 @@ Store.prototype.checkOut = function(onFinish){
 
     if(onFinish) onFinish();//This calls the callback function
 
-}
+};
 
 Store.prototype.addItemToCart = function(itemName){
 
@@ -181,7 +181,7 @@ function computeDelta(newProducts, storeInstance) {
             delta[`${item}`] = { label: newProducts[item].label};
 
             //only show updated price if there is an updated price
-            if(newProducts[item].price != storeInstance.stock[item].price){
+            if(newProducts[item].price !== storeInstance.stock[item].price){
                 delta[`${item}`] = { price: newProducts[item].price - storeInstance.stock[item].price};
             }
             //quantity of items = storeInstance.stock[item].quantity + storeInstance.cart[item]
@@ -192,7 +192,7 @@ function computeDelta(newProducts, storeInstance) {
 
                 storeInstance.cart[item] = newProducts[item].quantity;
                 storeInstance.stock[item] = 0;
-            } else if ((storeInstance.stock[item].quantity + storeInstance.cart[item]) != newProducts[item].quantity){
+            } else if ((storeInstance.stock[item].quantity + storeInstance.cart[item]) !== newProducts[item].quantity){
 
                 delta[`${item}`] = {quantity: newProducts[item].quantity - (storeInstance.stock[item].quantity + storeInstance.cart[item])};
           
@@ -335,6 +335,11 @@ function renderCart(container, storeInstance) {
         };
 
         modalContent.appendChild(decreaseQuantity);
+
+        const price = document.createElement('span');
+        price.textContent = `price:$${storeInstance.cart[key] * storeInstance.stock[key].price}`;
+
+        modalContent.appendChild(price);
 
         const breakTag = document.createElement("br");
         modalContent.appendChild(breakTag);
