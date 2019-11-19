@@ -11,18 +11,18 @@ function Store(serverUrl){
 
 
 Store.prototype.checkOut = function(onFinish){
-
+    const self = this;
     this.syncWithServer(function(delta){
 
-        var messageToPost = "";
+        let messageToPost = "";
 
         if(delta){
-        for (var property in delta) {
-            if(delta[property] != null){
-                if(delta[property].price != null && delta[property].price != 0){
+        for (const property in delta) {
+            if(delta.hasOwnProperty(property)){
+                if(!delta[property].price && delta[property].price !== 0){
                     //Here we update the prices of our items in stock
-                    var newPrice = store.stock[property].price;
-                    var oldPrice = (newPrice - delta[property].price).toString();
+                    let newPrice = store.stock[property].price;
+                    let oldPrice = (newPrice - delta[property].price).toString();
 
                     store.stock[property].price = store.stock[property].price + delta[property].price; //Here we update the price
                     //of our items in stock
@@ -31,13 +31,13 @@ Store.prototype.checkOut = function(onFinish){
                     messageToPost = messageToPost + "Price of " + property + " changed from " + oldPrice + " to "  +  newPrice + "\n";
                 }
 
-                if(delta[property].quantity != null && delta[property].quantity != 0){
+                if(!delta[property].quantity && delta[property].quantity !== 0){
 
                     //var previousStock = store.stock[property].quantity;
                     //var newStock = (previousStock + delta[property].quantity).toString();
 
-                    var newStock = store.stock[property].quantity;
-                    var previousStock = (newStock - delta[property].quantity).toString();
+                    let newStock = store.stock[property].quantity;
+                    let previousStock = (newStock - delta[property].quantity).toString();
 
                     messageToPost = messageToPost + "Quantity of " + property + " changed from " + previousStock + 
                     " to " + newStock + "\n";
@@ -51,19 +51,35 @@ Store.prototype.checkOut = function(onFinish){
 
         //case where there was no change in stock
         //Calculate the total price of the items in the cart
-        var totalPrice = 0;
+        let totalPrice = 0;
         if(messageToPost === ""){
-            for (var property in store.cart){
+            for (const property in store.cart){
 
                 //store.cart[property] gives the quantity of the items in the cart
-
-                totalPrice = totalPrice + (store.cart[property] * store.stock[property].price);
+                if(store.cart.hasOwnProperty(property))
+                    totalPrice = totalPrice + (store.cart[property] * store.stock[property].price);
             }
             messageToPost = "The total amount due is $" + totalPrice.toString();
 
 
         }
-        alert(messageToPost);
+        const order = {
+            client_id: 1000 * Math.random(),
+            cart: self.cart,
+            total: totalPrice,
+        };
+
+        ajaxPost(
+            `${self.serverUrl}/checkout`,
+            order,
+            (items) => {
+                alert(`Checkout successful for the items \n ${items}`);
+                self.cart = {};
+                self.onUpdate();
+            },
+            (err) => {
+                alert(`Error: ${err} Checkout unsuccessful. Please Try again...`);
+            })
         } 
     });
 
@@ -442,6 +458,24 @@ function ajaxGet(url, onSuccess, onError) {
             console.log(`Request successful. Calling the onSuccess method with the data`);
             this.tryCount = 0;
             onSuccess(data);
+        }
+    });
+}
+
+function ajaxPost(url, data, onSuccess, onError){
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: data,
+        contentType:'application/json; charset=utf-8',
+        error: function(xhr, textStatus, err) {
+            if (textStatus === 'timeout' || xhr.status !== 200) {
+                onError(err);
+            }
+        },
+        success: function(data) {
+            const jsonData = JSON.parse(data);
+            onSuccess(jsonData);
         }
     });
 }

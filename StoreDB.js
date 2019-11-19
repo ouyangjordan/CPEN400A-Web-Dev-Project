@@ -36,12 +36,16 @@ StoreDB.prototype.getProducts = function(queryParams){
 								category: { $eq: category }	}
 							);
 
-		return new Promise((resolve) => {
-			const products = {};
-			data.forEach( (obj) => {
-				products.push(obj);
-			});
-			resolve(products);
+		return new Promise((resolve, reject) => {
+			if (data){
+				const products = {};
+				data.forEach( (obj) => {
+					products.push(obj);
+				});
+				resolve(products);
+			}
+			else
+				reject('No Such Product found');
 		});
 	})
 };
