@@ -310,7 +310,8 @@ function renderCart(container, storeInstance) {
     modalContent.style.border = "1px solid #888";
     modalContent.style.width = "40%";
 
-    
+    let totalPrice = 0;
+
     for (let key in storeInstance.cart) {
 
         const cartItem = document.createElement("span");
@@ -339,11 +340,15 @@ function renderCart(container, storeInstance) {
         const price = document.createElement('span');
         price.textContent = `price:$${storeInstance.cart[key] * storeInstance.stock[key].price}`;
 
+        totalPrice += storeInstance.cart[key] * storeInstance.stock[key].price;
         modalContent.appendChild(price);
 
         const breakTag = document.createElement("br");
         modalContent.appendChild(breakTag);
     }
+
+    const totalPriceDiv = document.createElement('div');
+    totalPriceDiv.textContent = `Total Price: ${totalPrice}`;
 
     const hideCartButton = document.createElement("button");
     hideCartButton.innerText = "Hide Cart";
@@ -353,6 +358,7 @@ function renderCart(container, storeInstance) {
     };
 
     modalContent.appendChild(hideCartButton);
+    modalContent.appendChild(totalPriceDiv);
     
 
     const checkOutButton = document.createElement("button");
