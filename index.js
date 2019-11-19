@@ -1,10 +1,10 @@
 // Require dependencies
-var path = require('path');
-var express = require('express');
+const path = require('path');
+const express = require('express');
 
 // Declare application parameters
-var PORT = process.env.PORT || 3000;
-var STATIC_ROOT = path.resolve(__dirname, './public');
+const PORT = process.env.PORT || 3000;
+const STATIC_ROOT = path.resolve(__dirname, './public');
 
 // Defining CORS middleware to enable CORS.
 // (should really be using "express-cors",

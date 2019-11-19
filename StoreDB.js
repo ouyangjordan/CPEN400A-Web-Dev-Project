@@ -1,4 +1,4 @@
-var MongoClient = require('mongodb').MongoClient;	// require the mongodb driver
+const MongoClient = require('mongodb').MongoClient;	// require the mongodb driver
 
 /**
  * Uses mongodb v3.1.9 - [API Documentation](http://mongodb.github.io/node-mongodb-native/3.1/api/)
@@ -27,13 +27,29 @@ function StoreDB(mongoUrl, dbName){
 StoreDB.prototype.getProducts = function(queryParams){
 	return this.connected.then(function(db){
 		// TODO: Implement functionality
+		const minPrice = queryParams.minPrice;
+		const maxPrice = queryParams.maxPrice;
+		const category = queryParams.category;
+
+		const data = db.find( { minPrice: { $gte: minPrice },
+								maxPrice: { $lte: maxPrice },
+								category: { $eq: category }	}
+							);
+
+		return new Promise((resolve) => {
+			const products = {};
+			data.forEach( (obj) => {
+				products.push(obj);
+			});
+			resolve(products);
+		});
 	})
-}
+};
 
 StoreDB.prototype.addOrder = function(order){
 	return this.connected.then(function(db){
 		// TODO: Implement functionality
 	})
-}
+};
 
 module.exports = StoreDB;
