@@ -2,13 +2,12 @@
 const path = require('path');
 const express = require('express');
 const StoreDB = require("./StoreDB");
-const bodyParser = require('body-parser');
 
 // Declare application parameters
 const PORT = process.env.PORT || 3000;
 const STATIC_ROOT = path.resolve(__dirname, './public');
 
-const db = new StoreDB('mongodb://127.0.0.1:27017/?compressors=snappy&gssapiServiceName=mongodb', 'cpen400a-bookstore');
+const db = StoreDB('mongodb://127.0.0.1:27017', 'cpen400a-bookstore');
 
 // Defining CORS middleware to enable CORS.
 // (should really be using "express-cors",
@@ -27,7 +26,6 @@ const app = express();
 app.use(express.json());							// handles JSON payload
 app.use(express.urlencoded({ extended : true }));	// handles URL encoded payload
 app.use(cors);										// Enable CORS
-app.use(bodyParser);
 
 app.use('/', express.static(STATIC_ROOT));			// Serve STATIC_ROOT at URL "/" as a static resource
 
@@ -35,10 +33,12 @@ app.use('/', express.static(STATIC_ROOT));			// Serve STATIC_ROOT at URL "/" as 
 app.get('/products', (req, res) => {
 	const queryParams = req.query;
 	db.getProducts(queryParams)
-		.then( products => res.json(products))
+		.then( products => {
+			res.json(products);
+		})
 		.catch( err => {
 			res.status(500);
-			res.error('Could not fetch products from the DB');
+			res.send(`${err}`);
 		});
 });
 

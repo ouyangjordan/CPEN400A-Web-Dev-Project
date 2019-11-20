@@ -11,8 +11,9 @@ function StoreDB(mongoUrl, dbName){
 		MongoClient.connect(
 			mongoUrl,
 			{
-				useNewUrlParser: true
-			},
+				useNewUrlParser: true,
+				useUnifiedTopology: true
+	},
 			function(err, client){
 
 				if (err) {
@@ -29,26 +30,33 @@ function StoreDB(mongoUrl, dbName){
 }
 
 StoreDB.prototype.getProducts = function(queryParams){
-	return this.connected.then(function(db){
+	return this.connected.then( db => {
 		const minPrice = queryParams.minPrice;
 		const maxPrice = queryParams.maxPrice;
 		const category = queryParams.category;
 
-		const data = db.find( { minPrice: { $gte: minPrice },
-								maxPrice: { $lte: maxPrice },
-								category: { $eq: category }	}
-							);
-
 		return new Promise((resolve, reject) => {
-			if (data){
-				const products = {};
-				data.forEach( (obj) => {
-					products.push(obj);
+			db.collection("products").find(
+				{
+					$or:
+						[
+							{minPrice: {$gte: minPrice}},
+							{maxPrice: {$lte: maxPrice}},
+							{category: {$eq: category}}
+						]
+				}
+			).toArray(
+				(err, data) => {
+					if(err)
+						reject(err);
+					else {
+						let jsonObj = {};
+						for (let i = 0 ; i < data.length; i++) {
+							jsonObj[data[i]._id] = data[i];
+						}
+						resolve(jsonObj);
+					}
 				});
-				resolve(products);
-			}
-			else
-				reject('No Such Product found');
 		});
 	})
 };
@@ -56,26 +64,27 @@ StoreDB.prototype.getProducts = function(queryParams){
 StoreDB.prototype.addOrder = function(order){
 	return this.connected.then(function(db){
 		let retId = null;
-		db.orders.insert(order, (objectToInsert, err) =>{
-			if(err) throw new Error('Could not insert the order in the DB. Please try again...');
-			retId = objectToInsert._id;
-		});
-
-		const keys = Object.keys(order.cart);
-
-		let products = db.product.find ({_id : { $in: keys} });
-
-		products = JSON.parse(products);
-
-		for(let p in products){
-			if(products.hasOwnProperty(p)){
-				const key = p._id;
-				p[quantity] -= order.cart[key];
-				db.product.update ({_id: key}, p);
-			}
-		}
-
 		return new Promise((resolve, reject) => {
+			db.collections("orders").insert(order, (objectToInsert, err) =>{
+				if(err) throw new Error('Could not insert the order in the DB. Please try again...');
+				retId = objectToInsert._id;
+			});
+
+			const keys = Object.keys(order.cart);
+
+			let products = db.product.find ({_id : { $in: keys} });
+
+			products = JSON.parse(products);
+			console.log(products);
+
+			for(let p in products){
+				if(products.hasOwnProperty(p)){
+					const key = p._id;
+					p[quantity] -= order.cart[key];
+					db.product.update ({_id: key}, p);
+				}
+			}
+
 			if(!retId)
 				reject('error');
 			resolve(retId);

@@ -157,7 +157,7 @@ Store.prototype.syncWithServer = function(onSync){
     },
 
     function () {
-        alert('error')
+        alert('Error syncWithServer')
     });
 
 };
@@ -445,6 +445,7 @@ function ajaxGet(url, onSuccess, onError) {
                 this.tryCount++;
                 if (this.tryCount < this.retryLimit) {
                     //try again
+                    console.log(this.url);
                     console.log(`${this.tryCount} call to the server failed. Trying again ...`);
                     $.ajax(this);
                 } else {
