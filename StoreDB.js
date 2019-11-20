@@ -26,7 +26,6 @@ function StoreDB(mongoUrl, dbName){
 
 StoreDB.prototype.getProducts = function(queryParams){
 	return this.connected.then(function(db){
-		// TODO: Implement functionality
 		const minPrice = queryParams.minPrice;
 		const maxPrice = queryParams.maxPrice;
 		const category = queryParams.category;
@@ -52,7 +51,7 @@ StoreDB.prototype.getProducts = function(queryParams){
 
 StoreDB.prototype.addOrder = function(order){
 	return this.connected.then(function(db){
-		// TODO: Implement functionality
+
 	})
 };
 
