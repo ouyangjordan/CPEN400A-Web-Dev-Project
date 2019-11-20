@@ -1,14 +1,14 @@
 // Require dependencies
 const path = require('path');
 const express = require('express');
-const StoreDB = require('StoreDB');
+const StoreDB = require("./StoreDB");
 const bodyParser = require('body-parser');
 
 // Declare application parameters
 const PORT = process.env.PORT || 3000;
 const STATIC_ROOT = path.resolve(__dirname, './public');
 
-const db = new StoreDB('mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb', 'cpen400a-bookstore');
+const db = new StoreDB('mongodb://127.0.0.1:27017/?compressors=snappy&gssapiServiceName=mongodb', 'cpen400a-bookstore');
 
 // Defining CORS middleware to enable CORS.
 // (should really be using "express-cors",
@@ -38,7 +38,23 @@ app.get('/products', (req, res) => {
 		.then( products => res.json(products))
 		.catch( err => {
 			res.status(500);
-			res.errmsg('Could not fetch products from the DB');
+			res.error('Could not fetch products from the DB');
+		});
+});
+
+app.post('/checkout', (req, res) => {
+	const order = req.body;
+
+	if(!order.cart || typeof order.total !== 'number' || typeof order.client_id !== 'string'){
+		res.status(400);
+		res.error('The order does not have expected fields with right types');
+	}
+
+	db.addOrder(order)
+		.then( id => res.json(id))
+		.catch( err => {
+			res.status(500);
+			res.error('Could not post the order');
 		});
 });
 

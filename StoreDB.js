@@ -14,7 +14,11 @@ function StoreDB(mongoUrl, dbName){
 				useNewUrlParser: true
 			},
 			function(err, client){
-				if (err) reject(err);
+
+				if (err) {
+					console.log(err);
+					reject(err);
+				}
 				else {
 					console.log('[MongoClient] Connected to '+mongoUrl+'/'+dbName);
 					resolve(client.db(dbName));
@@ -51,7 +55,31 @@ StoreDB.prototype.getProducts = function(queryParams){
 
 StoreDB.prototype.addOrder = function(order){
 	return this.connected.then(function(db){
+		let retId = null;
+		db.orders.insert(order, (objectToInsert, err) =>{
+			if(err) throw new Error('Could not insert the order in the DB. Please try again...');
+			retId = objectToInsert._id;
+		});
 
+		const keys = Object.keys(order.cart);
+
+		let products = db.product.find ({_id : { $in: keys} });
+
+		products = JSON.parse(products);
+
+		for(let p in products){
+			if(products.hasOwnProperty(p)){
+				const key = p._id;
+				p[quantity] -= order.cart[key];
+				db.product.update ({_id: key}, p);
+			}
+		}
+
+		return new Promise((resolve, reject) => {
+			if(!retId)
+				reject('error');
+			resolve(retId);
+		});
 	})
 };
 
