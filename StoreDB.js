@@ -31,28 +31,28 @@ function StoreDB(mongoUrl, dbName){
 
 StoreDB.prototype.getProducts = function(queryParams){
 	return this.connected.then( db => {
-		const minPrice = queryParams.minPrice;
-		const maxPrice = queryParams.maxPrice;
-		const category = queryParams.category;
+		const minPrice = !queryParams.minPrice ? 0: Number(queryParams.minPrice);
+		const maxPrice = !queryParams.maxPrice ? Number.MAX_SAFE_INTEGER: Number(queryParams.maxPrice);
+		const category = !queryParams.category ? new RegExp('.*'): queryParams.category;
 
 		return new Promise((resolve, reject) => {
 			db.collection("products").find(
 				{
-					$or:
+					$and:
 						[
-							{minPrice: {$gte: minPrice}},
-							{maxPrice: {$lte: maxPrice}},
-							{category: {$eq: category}}
+							{price: {$gte: minPrice}},
+							{price: {$lte: maxPrice}},
+							{category: {$regex: category}}
 						]
 				}
 			).toArray(
-				(err, data) => {
+				(err, result) => {
 					if(err)
 						reject(err);
 					else {
 						let jsonObj = {};
-						for (let i = 0 ; i < data.length; i++) {
-							jsonObj[data[i]._id] = data[i];
+						for (let i = 0 ; i < result.length; i++) {
+							jsonObj[result[i]._id] = result[i];
 						}
 						resolve(jsonObj);
 					}
@@ -63,31 +63,30 @@ StoreDB.prototype.getProducts = function(queryParams){
 
 StoreDB.prototype.addOrder = function(order){
 	return this.connected.then(function(db){
-		let retId = null;
 		return new Promise((resolve, reject) => {
-			db.collections("orders").insert(order, (objectToInsert, err) =>{
-				if(err) throw new Error('Could not insert the order in the DB. Please try again...');
-				retId = objectToInsert._id;
-			});
+			db.collection("orders").insertOne(order, (err, res) => {
+				if (err)
+					reject(err);
+				else {
+					const bulkUpdate = db.collection("products").initializeUnorderedBulkOp();
 
-			const keys = Object.keys(order.cart);
-
-			let products = db.product.find ({_id : { $in: keys} });
-
-			products = JSON.parse(products);
-			console.log(products);
-
-			for(let p in products){
-				if(products.hasOwnProperty(p)){
-					const key = p._id;
-					p[quantity] -= order.cart[key];
-					db.product.update ({_id: key}, p);
+					for (const item in order.cart) {
+						if(order.cart.hasOwnProperty(item))
+							bulkUpdate.find({
+								_id: item
+							}).updateOne({
+								$inc: {quantity: -order.cart[item]}
+							});
+					}
+					bulkUpdate.execute((err, _) => {
+						if (err)
+							reject(err);
+						else {
+							resolve(res.ops[0]);
+						}
+					});
 				}
-			}
-
-			if(!retId)
-				reject('error');
-			resolve(retId);
+			})
 		});
 	})
 };

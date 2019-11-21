@@ -74,7 +74,10 @@ var TESTS = {
                     if (typeof data === "object" && !(data instanceof Array)) {
                         var keys = Object.keys(data).sort();
                         if (isEquivalent(keys, ["Jeans"])) marks += .5;
-                        else comments.push("minPrice: 40, maxPrice: 100, category: Clothing - returned data is not correctly filtered")
+                        else {
+                            console.log(`KEYS: ${keys}`);
+                            comments.push("minPrice: 40, maxPrice: 100, category: Clothing - returned data is not correctly filtered")
+                        }
                     } else comments.push('minPrice: 40, maxPrice: 100, category: Clothing - returns a "' + typeof data + '" object - should return a "Products" object');
                     resolve()
                 })

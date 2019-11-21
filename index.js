@@ -31,8 +31,7 @@ app.use('/', express.static(STATIC_ROOT));			// Serve STATIC_ROOT at URL "/" as 
 
 // Configure '/products' endpoint
 app.get('/products', (req, res) => {
-	const queryParams = req.query;
-	db.getProducts(queryParams)
+	db.getProducts(req.query)
 		.then( products => {
 			res.json(products);
 		})
@@ -46,7 +45,7 @@ app.post('/checkout', (req, res) => {
 	const order = req.body;
 
 	if(!order.cart || typeof order.total !== 'number' || typeof order.client_id !== 'string'){
-		res.status(400);
+		res.status(500);
 		res.error('The order does not have expected fields with right types');
 	}
 
