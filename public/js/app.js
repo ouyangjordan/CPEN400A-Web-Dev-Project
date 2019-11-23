@@ -19,7 +19,7 @@ Store.prototype.checkOut = function(onFinish){
         if(delta){
         for (const property in delta) {
             if(delta.hasOwnProperty(property)){
-                if(!delta[property].price && delta[property].price !== 0){
+                if(delta[property].price && delta[property].price !== 0){
                     //Here we update the prices of our items in stock
                     let newPrice = store.stock[property].price;
                     let oldPrice = (newPrice - delta[property].price).toString();
@@ -467,7 +467,7 @@ function ajaxPost(url, data, onSuccess, onError){
     $.ajax({
         url: url,
         type: 'POST',
-        data: data,
+        data: JSON.stringify(data),
         contentType:'application/json; charset=utf-8',
         error: function(xhr, textStatus, err) {
             if (textStatus === 'timeout' || xhr.status !== 200) {
@@ -542,7 +542,7 @@ function renderMenu(container, storeInstance){
 
     checkoutButton.onclick = function(){
         showCart();
-    }
+    };
 
     document.getElementById('menuView').appendChild(checkoutButton);
 

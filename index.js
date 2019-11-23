@@ -43,17 +43,16 @@ app.get('/products', (req, res) => {
 
 app.post('/checkout', (req, res) => {
 	const order = req.body;
+	console.log(order);
 
 	if(!order.cart || typeof order.total !== 'number' || typeof order.client_id !== 'string'){
-		res.status(500);
-		res.error('The order does not have expected fields with right types');
+		res.status(500).send('The order does not have expected fields with right types');
 	}
 
 	db.addOrder(order)
 		.then( id => res.json(id))
 		.catch( err => {
-			res.status(500);
-			res.error('Could not post the order');
+			res.status(500).send('Could not post the order');
 		});
 });
 
