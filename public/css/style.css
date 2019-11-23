@@ -38,8 +38,11 @@ ul {
     background-color: chocolate;
     max-width: 400px;
     margin-bottom: 5px;
+    /*
     height: 50px;
-    font-size: 20px;
+    font-size: 20px;*/
+    font-size: 14px; /*Because the boxes were bein resized oddly*/
+    width:300px; /*This is also new*/
     line-height: 50px;
 }
 

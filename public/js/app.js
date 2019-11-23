@@ -515,8 +515,38 @@ Store.prototype.queryProducts = function(query, callback){
     )
 };
 
+/*
+window.onload = function(){
+    
+
+    let checkoutButton = document.createElement('button'); 
+
+    checkoutButton.onclick = function(){
+        showCart();
+    }
+
+    document.getElementById('menuView').appendChild(checkoutButton);
+
+}
+
+*/
+
 function renderMenu(container, storeInstance){
+
+
+
     while (container.lastChild) container.removeChild(container.lastChild);
+
+    let checkoutButton = document.createElement('button'); 
+    checkoutButton.innerText = "View Cart";
+
+    checkoutButton.onclick = function(){
+        showCart();
+    }
+
+    document.getElementById('menuView').appendChild(checkoutButton);
+
+    
     if (!container._filters) {
         container._filters = {
             minPrice: null,
@@ -537,6 +567,11 @@ function renderMenu(container, storeInstance){
         }
     }
 
+
+
+
+
+
     let box = document.createElement('div'); container.appendChild(box);
     box.id = 'price-filter';
     let input = document.createElement('input'); box.appendChild(input);
@@ -549,6 +584,8 @@ function renderMenu(container, storeInstance){
         container._refresh();
     });
 
+
+
     input = document.createElement('input'); box.appendChild(input);
     input.type = 'number';
     input.value = container._filters.maxPrice;
@@ -559,6 +596,8 @@ function renderMenu(container, storeInstance){
         container._refresh();
     });
 
+
+
     let list = document.createElement('ul'); container.appendChild(list);
     list.id = 'menu';
     let listItem = document.createElement('li'); list.appendChild(listItem);
@@ -568,6 +607,8 @@ function renderMenu(container, storeInstance){
         container._filters.category = '';
         container._refresh()
     });
+
+
     let CATEGORIES = [ 'Clothing', 'Technology', 'Office', 'Outdoor' ];
     for (let i in CATEGORIES){
         let listItem = document.createElement('li'); list.appendChild(listItem);
