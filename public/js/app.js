@@ -87,6 +87,7 @@ Store.prototype.checkOut = function(onFinish){
                     alert(alertBuilder);
                     self.cart = {};
                     self.onUpdate();
+                    hideCart();
                 },
                 (err) => {
                     alert(`Error: ${err} Checkout unsuccessful. Please Try again...`);

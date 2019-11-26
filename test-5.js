@@ -24,8 +24,6 @@ var TESTS = {
                     if (data instanceof Array) comments.push('returns an Array - should return a "Products" object');
                     else if (typeof data === "object") {
                         marks += .5;
-
-                        console.log(marks);
                         var keys = Object.keys(data).sort();
                         if (isEquivalent(keys, PRODUCTS)) marks += .5;
                         else comments.push("not returning the full product list")
@@ -87,8 +85,6 @@ var TESTS = {
                 })
             }));
             return Promise.all(subtests).then(() => {
-
-                console.log(marks);
                 return {
                     marks: marks,
                     comments: comments
