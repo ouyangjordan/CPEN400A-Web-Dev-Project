@@ -52,17 +52,19 @@ Store.prototype.checkOut = function(onFinish){
         //case where there was no change in stock
         //Calculate the total price of the items in the cart
         let totalPrice = 0;
-        if(messageToPost === ""){
-            for (const property in store.cart){
+        
+        /*
+        if(messageToPost !== ""){
+            alert(messageToPost);
+        }*/
 
-                //store.cart[property] gives the quantity of the items in the cart
-                if(store.cart.hasOwnProperty(property))
-                    totalPrice = totalPrice + (store.cart[property] * store.stock[property].price);
+        for (const property in store.cart){
+            //store.cart[property] gives the quantity of the items in the cart
+            if(store.cart.hasOwnProperty(property)){
+                totalPrice = totalPrice + (store.cart[property] * store.stock[property].price);
             }
-            messageToPost = "The total amount due is $" + totalPrice.toString();
-
-
         }
+
         const order = {
             client_id: 1000 * Math.random(),
             cart: self.cart,
@@ -73,7 +75,15 @@ Store.prototype.checkOut = function(onFinish){
             `${self.serverUrl}/checkout`,
             order,
             (items) => {
-                alert(`Checkout successful for the items \n ${items}`);
+
+                var alertBuilder = "Checkout successful for the items \n";
+                for (var key in items.cart) {
+                    alertBuilder += key + " : " + items.cart[key] + "\n";
+                }
+
+                alertBuilder += "Total price charged is $" + items.total;
+                //alert(`Checkout successful for the items \n ${items.cart}`);
+                alert(alertBuilder);
                 self.cart = {};
                 self.onUpdate();
             },
@@ -464,19 +474,25 @@ function ajaxGet(url, onSuccess, onError) {
 }
 
 function ajaxPost(url, data, onSuccess, onError){
+    console.log(JSON.stringify(data));
+    console.log(url);
+    console.log(data);
+
     $.ajax({
         url: url,
-        type: 'POST',
+        type: "POST",
         data: JSON.stringify(data),
-        contentType:'application/json; charset=utf-8',
+        contentType: "application/json; charset=UTF-8",
         error: function(xhr, textStatus, err) {
+            console.log(xhr.status);
+            console.log(textStatus);
             if (textStatus === 'timeout' || xhr.status !== 200) {
                 onError(err);
             }
         },
         success: function(data) {
-            const jsonData = JSON.parse(data);
-            onSuccess(jsonData);
+            //const jsonData = JSON.parse(data);
+            onSuccess(data);
         }
     });
 }

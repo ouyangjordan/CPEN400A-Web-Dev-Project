@@ -13,6 +13,7 @@ const db = StoreDB('mongodb://127.0.0.1:27017', 'cpen400a-bookstore');
 // (should really be using "express-cors",
 // but this function is provided to show what is really going on when we say "we enable CORS")
 function cors(req, res, next){
+
     res.header("Access-Control-Allow-Origin", "*");
   	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   	res.header("Access-Control-Allow-Methods", "GET,POST,DELETE,OPTIONS,PUT");
@@ -42,8 +43,11 @@ app.get('/products', (req, res) => {
 });
 
 app.post('/checkout', (req, res) => {
+
 	const order = req.body;
 	console.log(order);
+
+	order.client_id = order.client_id.toString(); //Because the client id was a snumber
 
 	if(!order.cart || typeof order.total !== 'number' || typeof order.client_id !== 'string'){
 		res.status(500).send('The order does not have expected fields with right types');
