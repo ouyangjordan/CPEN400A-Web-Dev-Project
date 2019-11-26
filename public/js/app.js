@@ -65,31 +65,35 @@ Store.prototype.checkOut = function(onFinish){
             }
         }
 
-        const order = {
-            client_id: 1000 * Math.random(),
-            cart: self.cart,
-            total: totalPrice,
-        };
 
-        ajaxPost(
-            `${self.serverUrl}/checkout`,
-            order,
-            (items) => {
+        if(totalPrice !== 0){
+            const order = {
+                client_id: 1000 * Math.random(),
+                cart: self.cart,
+                total: totalPrice,
+            };
 
-                var alertBuilder = "Checkout successful for the items \n";
-                for (var key in items.cart) {
-                    alertBuilder += key + " : " + items.cart[key] + "\n";
-                }
+            ajaxPost(
+                `${self.serverUrl}/checkout`,
+                order,
+                (items) => {
+                    var alertBuilder = "Checkout successful for the items \n";
+                    for (var key in items.cart) {
+                        alertBuilder += key + " : " + items.cart[key] + "\n";
+                    }
 
-                alertBuilder += "Total price charged is $" + items.total;
-                //alert(`Checkout successful for the items \n ${items.cart}`);
-                alert(alertBuilder);
-                self.cart = {};
-                self.onUpdate();
-            },
-            (err) => {
-                alert(`Error: ${err} Checkout unsuccessful. Please Try again...`);
-            })
+                    alertBuilder += "Total price charged is $" + items.total;
+                    //alert(`Checkout successful for the items \n ${items.cart}`);
+                    alert(alertBuilder);
+                    self.cart = {};
+                    self.onUpdate();
+                },
+                (err) => {
+                    alert(`Error: ${err} Checkout unsuccessful. Please Try again...`);
+                })
+        } else {
+            alert("You have no items in your shopping cart!");
+        }
         } 
     });
 
@@ -381,7 +385,7 @@ function renderCart(container, storeInstance) {
     }
 
     const totalPriceDiv = document.createElement('div');
-    totalPriceDiv.textContent = `Total Price: ${totalPrice}`;
+    totalPriceDiv.textContent = `Total Price: $${totalPrice}`;
 
     const hideCartButton = document.createElement("button");
     hideCartButton.innerText = "Hide Cart";
@@ -474,18 +478,12 @@ function ajaxGet(url, onSuccess, onError) {
 }
 
 function ajaxPost(url, data, onSuccess, onError){
-    console.log(JSON.stringify(data));
-    console.log(url);
-    console.log(data);
-
     $.ajax({
         url: url,
         type: "POST",
         data: JSON.stringify(data),
         contentType: "application/json; charset=UTF-8",
         error: function(xhr, textStatus, err) {
-            console.log(xhr.status);
-            console.log(textStatus);
             if (textStatus === 'timeout' || xhr.status !== 200) {
                 onError(err);
             }
@@ -549,8 +547,6 @@ window.onload = function(){
 
 function renderMenu(container, storeInstance){
 
-
-
     while (container.lastChild) container.removeChild(container.lastChild);
 
     let checkoutButton = document.createElement('button'); 
@@ -582,11 +578,6 @@ function renderMenu(container, storeInstance){
             });
         }
     }
-
-
-
-
-
 
     let box = document.createElement('div'); container.appendChild(box);
     box.id = 'price-filter';
